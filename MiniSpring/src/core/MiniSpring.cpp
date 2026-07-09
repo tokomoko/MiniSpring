@@ -1,6 +1,6 @@
 #include"MiniSpring.h"
 
-MiniSpring::MiniSpring() : m_server(*this) {}
+MiniSpring::MiniSpring() : m_server(*this), m_entityManager(*m_database, m_entityRegistry) {}
 
 void MiniSpring::GET(const std::string& path, Router::Handler handler) {
 	m_router.addRoute("GET", path, handler);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../../core/Value.h"
+
 #include "../Database.h"
 
 class SQLiteDatabase : public Database {
@@ -16,6 +18,7 @@ public:
 	void beginTransaction() override;
 	void commit() override;
 	void rollback() override;
+	Value lastInsertId() override;
 
 private:
 	struct sqlite3* m_database;

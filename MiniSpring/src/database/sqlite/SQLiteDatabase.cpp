@@ -81,3 +81,7 @@ void SQLiteDatabase::rollback() {
 std::unique_ptr<PreparedStatement> SQLiteDatabase::prepare(const std::string& sql) {
 	return std::make_unique<SQLitePreparedStatement>(m_database, sql);
 }
+
+Value SQLiteDatabase::lastInsertId() {
+	return static_cast<int>(sqlite3_last_insert_rowid(m_database));
+}
