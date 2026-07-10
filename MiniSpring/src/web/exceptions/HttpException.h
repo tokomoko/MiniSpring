@@ -1,9 +1,11 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include <exception>
 #include <string>
 
-class HttpException : public std::exception {
+class MINISPRING_API HttpException : public std::exception {
 public:
 	HttpException(int status, std::string message);
 

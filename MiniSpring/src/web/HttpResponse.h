@@ -1,11 +1,14 @@
 #pragma once
 
+#include"../core/Core.h"
+
+#include"../json/JsonValue.h"
+
 #include"HttpHeaders.h"
-#include"../json/Json.h"
 
 #include<string>
 
-class HttpResponse {
+class MINISPRING_API HttpResponse {
 public:
 	HttpResponse();
 
@@ -14,7 +17,7 @@ public:
 
 	void header(const std::string& name, const std::string& value);
 	void body(const std::string& content);
-	void json(Json json);
+	void json(const JsonValue& json);
 	void html(const std::string& content);
 
 	std::string build();

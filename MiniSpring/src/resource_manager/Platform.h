@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <filesystem>
 
-std::filesystem::path executableDirectory();
+MINISPRING_API std::filesystem::path executableDirectory();

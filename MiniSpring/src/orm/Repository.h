@@ -2,6 +2,8 @@
 
 #include "EntityManager.h"
 
+#include"../core/Core.h"
+
 #include <optional>
 #include <vector>
 

@@ -2,11 +2,12 @@
 
 #include"FieldMetadata.h"
 
+#include"../core/Core.h"
 #include"../core/Value.h"
 
 #include<string>
 
-class FieldBase {
+class MINISPRING_API FieldBase {
 public:
 	FieldBase(std::string n, FieldMetadata metadata) : m_name(n), m_metadata(metadata) {}
 

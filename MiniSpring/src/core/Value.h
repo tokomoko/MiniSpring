@@ -1,11 +1,15 @@
 #pragma once
 
-#include <variant>
-#include <string>
+#include"Core.h"
 
-class Value {
-public:
+#include<variant>
+#include<string>
+#include<stdexcept>
+#include<iostream>
+
+class MINISPRING_API Value {
 	using Type = std::variant<std::nullptr_t, bool, int, double, std::string>;
+public:
 	Value();
 	Value(std::nullptr_t value);
 	Value(bool value);
@@ -13,6 +17,8 @@ public:
 	Value(double value);
 	Value(const char* value);
 	Value(std::string value);
+
+	std::string escape(const std::string& s);
 
 	const Type& data() const {
 		return m_value;
@@ -24,7 +30,21 @@ public:
 
 	template<typename T>
 	T get() const {
-		if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
+		
+		if constexpr (std::is_same_v<T, bool>) {
+			if (is<int>()) return std::get<int>(m_value) != 0;
+		}
+
+		if constexpr (std::is_same_v<T, int>) {
+			if (is<bool>()) return std::get<bool>(m_value) ? 1 : 0;
+		}
+
+		if (!is<T>()) {
+			std::cout << "Expected: " << typeid(T).name() << '\n';
+			std::cout << "Variant index: " << m_value.index() << '\n';
+			throw std::runtime_error("Invalid Value conversion");
+		}
+		//if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
 		return std::get<T>(m_value);
 	}
 

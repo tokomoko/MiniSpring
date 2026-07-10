@@ -4,7 +4,7 @@
 #include <sstream>
 
 namespace MigrationUtils {
-	std::string checksum(const std::string& text) {
+	MINISPRING_API std::string checksum(const std::string& text) {
 		std::hash<std::string> hash;
 		size_t value = hash(text);
 		std::stringstream stream;

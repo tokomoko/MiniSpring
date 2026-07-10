@@ -1,6 +1,8 @@
 #pragma once
 
-class EntityDescriptorBase {
+#include"../core/Core.h"
+
+class MINISPRING_API EntityDescriptorBase {
 public:
 	virtual ~EntityDescriptorBase() = default;
 

@@ -1,23 +1,26 @@
 #pragma once
 
+#include"../core/Core.h"
 #include"../core/Value.h"
 
-#include <variant>
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include<variant>
+#include<string>
+#include<vector>
+#include<unordered_map>
+#include<stdexcept>
 
-class JsonValue;
+class MINISPRING_API JsonValue;
 
 using JsonArray = std::vector<JsonValue>;
 
 using JsonObject = std::unordered_map<std::string, JsonValue>;
 
-class JsonValue {
+class MINISPRING_API JsonValue {
 	using Type = std::variant<Value, JsonArray, JsonObject>;
 public:
 
 	JsonValue();
+	JsonValue(const Value& value);
 	JsonValue(const char* value);
 	JsonValue(std::string value);
 	JsonValue(double value);
@@ -28,10 +31,12 @@ public:
 
 	std::string stringify() const;
 	std::string asString() const;
+	JsonValue& operator[](const std::string& key);
 
 	template<typename T>
-	T as() const {
-		return get<Value>().get<T>();
+	const T& as() const {
+		if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
+		return std::get<T>(m_value);
 	}
 
 	template<typename T>
@@ -43,6 +48,7 @@ public:
 	const T& get() const {
 		return std::get<T>(m_value);
 	}
+
 
 private:
 	Type m_value;

@@ -1,9 +1,11 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <filesystem>
 #include <string>
 
-class ResourceManager {
+class MINISPRING_API ResourceManager {
 public:
 	explicit ResourceManager(std::filesystem::path root);
 

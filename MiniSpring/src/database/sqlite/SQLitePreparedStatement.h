@@ -1,10 +1,12 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include"../PreparedStatement.h"
 
 #include<sqlite3.h>
 
-class SQLitePreparedStatement : public PreparedStatement {
+class MINISPRING_API SQLitePreparedStatement : public PreparedStatement {
 public:
 
 	SQLitePreparedStatement(sqlite3* database, const std::string& sql);

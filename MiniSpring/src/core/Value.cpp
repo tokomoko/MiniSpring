@@ -36,3 +36,32 @@ std::string Value::toJsonString() const {
 
 	throw std::runtime_error("Unknown Value type");
 }
+
+std::string Value::escape(const std::string& s) {
+	std::string result;
+	result.reserve(s.size());
+
+	for (unsigned char c : s) {
+		switch (c) {
+		case '"':  result += "\\\""; break;
+		case '\\': result += "\\\\"; break;
+		case '\n': result += "\\n";  break;
+		case '\t': result += "\\t";  break;
+		case '\r': result += "\\r";  break;
+		case '\b': result += "\\b";  break;
+		case '\f': result += "\\f";  break;
+		default:
+			if (c < 0x20) {
+				// other control characters must be escaped as \u00XX
+				char buf[7];
+				std::snprintf(buf, sizeof(buf), "\\u%04x", c);
+				result += buf;
+			}
+			else {
+				result += c;
+			}
+		}
+	}
+
+	return result;
+}

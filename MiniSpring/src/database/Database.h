@@ -1,12 +1,14 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <memory>
 #include <string>
 
 #include"QueryResult.h"
 #include"PreparedStatement.h"
 
-class Database {
+class MINISPRING_API Database {
 public:
 	virtual ~Database() = default;
 

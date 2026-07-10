@@ -1,9 +1,11 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <string>
 #include <unordered_map>
 
-class HttpHeaders {
+class MINISPRING_API HttpHeaders {
 public:
 	void set(const std::string& name, const std::string& value);
 	std::string get(const std::string& name) const;

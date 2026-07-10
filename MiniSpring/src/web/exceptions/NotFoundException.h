@@ -1,8 +1,10 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include"HttpException.h"
 
-class NotFoundException : public HttpException
+class MINISPRING_API NotFoundException : public HttpException
 {
 public:
 	NotFoundException(std::string message) : HttpException(404, std::move(message)) {}

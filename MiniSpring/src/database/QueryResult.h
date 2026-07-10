@@ -1,10 +1,11 @@
 #pragma once
 
+#include"../core/Core.h"
 #include"../core/Value.h"
 
 #include<vector>
 
-class QueryResult {
+class MINISPRING_API QueryResult {
 public:
 	virtual ~QueryResult() = default;
 

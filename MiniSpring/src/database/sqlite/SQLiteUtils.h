@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include "../../core/Value.h"
 
 #include <sqlite3.h>
@@ -9,5 +11,5 @@ namespace SQLiteUtils {
 	using Row = std::vector<Value>;
 	using Rows = std::vector<Row>;
 
-	Rows readRows(sqlite3_stmt* statement);
+	MINISPRING_API Rows readRows(sqlite3_stmt* statement);
 }

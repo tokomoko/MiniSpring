@@ -1,12 +1,14 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include "../QueryResult.h"
 
 #include <vector>
 #include <string>
 #include <unordered_map>
 
-class SQLiteQueryResult : public QueryResult {
+class MINISPRING_API SQLiteQueryResult : public QueryResult {
 public:
 	SQLiteQueryResult(std::vector<std::vector<Value>> data, std::vector<std::string> columns) : m_data(std::move(data)), m_columns(std::move(columns)) {
 		for (int i = 0; i < m_columns.size(); i++) {

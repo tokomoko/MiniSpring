@@ -3,7 +3,7 @@
 #include"../DatabaseException.h"
 
 namespace SQLiteUtils {
-	Rows readRows(sqlite3_stmt* statement) {
+	MINISPRING_API Rows readRows(sqlite3_stmt* statement) {
 		Rows rows;
 		int columns = sqlite3_column_count(statement);
 

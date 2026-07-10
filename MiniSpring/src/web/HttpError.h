@@ -1,20 +1,22 @@
 #pragma once
 
-#include "../json/Json.h"
+#include"../core/Core.h"
 
-#include <string>
+#include"../json/JsonValue.h"
 
-class HttpError {
+#include<string>
+
+class MINISPRING_API HttpError {
 public:
 	HttpError(int status, std::string message);
-	HttpError(int status, std::string message, Json details);
+	HttpError(int status, std::string message, JsonValue details);
 
 	int status() const;
 	const std::string& message() const;
-	Json toJson() const;
+	JsonValue toJson() const;
 
 private:
 	int m_status;
 	std::string m_message;
-	Json m_details;
+	JsonValue m_details;
 };

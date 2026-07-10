@@ -40,11 +40,19 @@ Migration MigrationManager::parseMigrationFile(const std::filesystem::path& file
 
 	if (!input.is_open())
 		throw std::runtime_error("Cannot open migration: " + file.string());
-
+	
 	std::stringstream buffer;
 	buffer << input.rdbuf();
+	std::string content = buffer.str();
 
-	return Migration{version, name, buffer.str(), MigrationUtils::checksum(buffer.str())};
+	if (content.size() >= 3 &&
+		(unsigned char)content[0] == 0xEF &&
+		(unsigned char)content[1] == 0xBB &&
+		(unsigned char)content[2] == 0xBF) {
+		content.erase(0, 3);
+	}
+
+	return Migration{ version, name, content, MigrationUtils::checksum(content) };
 }
 
 std::vector<Migration> MigrationManager::loadMigrations() {

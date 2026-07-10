@@ -1,10 +1,11 @@
 #pragma once
 
+#include"../../core/Core.h"
 #include"../../core/Value.h"
 
 #include "../Database.h"
 
-class SQLiteDatabase : public Database {
+class MINISPRING_API SQLiteDatabase : public Database {
 public:
 	SQLiteDatabase();
 	~SQLiteDatabase();

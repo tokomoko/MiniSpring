@@ -1,20 +1,47 @@
 #pragma once
 
+#include"../core/Core.h"
+
+#include"../json/JsonParser.h"
+#include"../json/JsonMapper.h"
+
 #include"HttpHeaders.h"
 
-#include <string>
+#include<string>
+#include<unordered_map>
 
-class HttpRequest {
+class MINISPRING_API HttpRequest {
 public:
-	HttpRequest(const std::string& raw);
+	HttpRequest(const std::string& raw, JsonMapper& mapper);
 
 	std::string method();
 	std::string path();
-	std::string header(const std::string& name);
+
+	void setPathParameter(const std::string& name, const std::string& value);
+	std::string pathParameter(const std::string& name) const;
+
+	std::string header(const std::string& name) {
+		return m_headers.get(name);
+	}
+
+	const std::string& body() const {
+		return m_body;
+	}
+
+	template<typename T>
+	T json() {
+		JsonParser parser(m_body);
+		JsonValue value = parser.parse();
+		return m_mapper.fromJson<T>(value);
+	}
 
 private:
 	std::string m_requestMethod;
 	std::string m_requestPath;
+	std::string m_body;
 
+	std::unordered_map<std::string, std::string > m_pathParameters;
+
+	JsonMapper& m_mapper;
 	HttpHeaders m_headers;
 };

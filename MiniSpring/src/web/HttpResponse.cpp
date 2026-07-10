@@ -40,17 +40,17 @@ std::string HttpResponse::build() {
 
 	response << "\r\n";
 	response << m_responseBody;
+	header("Content-Length", std::to_string(m_responseBody.size()));
 
 	return response.str();
 }
 
-void HttpResponse::json(Json json) {
+void HttpResponse::json(const JsonValue& json) {
 	header("Content-Type", "application/json");
 	body(json.stringify());
 }
 
 void HttpResponse::html(const std::string& content) {
-	status(200);
 	header("Content-Type", "text/html");
 	body(content);
 }

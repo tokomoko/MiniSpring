@@ -1,5 +1,7 @@
 #pragma once
 
+#include"FieldBase.h"
+
 #include<functional>
 
 template<typename T>

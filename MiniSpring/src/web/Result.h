@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <variant>
 
 template<typename T, typename E>

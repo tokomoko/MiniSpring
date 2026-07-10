@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct Migration {
+MINISPRING_API struct Migration {
 	int version;
 	std::string name;
 	std::string sql;

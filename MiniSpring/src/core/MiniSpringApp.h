@@ -2,6 +2,8 @@
 
 #include"IRequestHandler.h"
 
+#include"Core.h"
+
 #include"../web/Router.h"
 #include"../web/HttpServer.h"
 #include"../web/Controller.h"
@@ -16,11 +18,6 @@
 #include"../database/PreparedStatement.h"
 #include"../database/QueryResult.h"
 
-#include"../database/sqlite/SQLiteDatabase.h"
-#include"../database/sqlite/SQLitePreparedStatement.h"
-#include"../database/sqlite/SQLiteQueryResult.h"
-#include"../database/sqlite/SQLiteUtils.h"
-
 #include"../database/migration_manager/Migration.h"
 #include"../database/migration_manager/MigrationManager.h"
 #include"../database/migration_manager/MigrationUtils.h"
@@ -34,32 +31,66 @@
 #include"../orm/EntityRegistry.h"
 #include"../orm/EntityManager.h"
 
-class MiniSpring : public IRequestHandler {
+#include"../json/JsonValue.h"
+#include"../json/JsonParser.h"
+#include"../json/JsonSerializer.h"
+#include"../json/JsonMapper.h"
+
+class MINISPRING_API MiniSpringApp : public IRequestHandler {
 public:
-	MiniSpring();
+	MiniSpringApp();
+	MiniSpringApp(const MiniSpringApp&) = delete;
+	MiniSpringApp& operator=(const MiniSpringApp&) = delete;
 
 	void GET(const std::string& path, Router::Handler handler);
 	void POST(const std::string& path, Router::Handler handler);
 
 	void listen(int port);
 
-	template<typename T>
-	void registerController() {
-		controllers.push_back(std::make_unique<T>());
+	template<typename T, typename... Args>
+	void registerController(Args&&... args) {
+		controllers.push_back(std::make_unique<T>(std::forward<Args>(args)...));
 		controllers.back()->registerRoutes(m_router);
 	}
 
 	void staticFiles(const std::filesystem::path& path);
+	void database(const std::filesystem::path& path);
 
 	bool handle(HttpRequest& request, HttpResponse& response) override;
 
+	void migrations(const std::filesystem::path& path);
+	void migrate();
+
+	EntityRegistry& entities() {
+		return m_entityRegistry;
+	}
+
+
+	EntityManager& entityManager() {
+		return *m_entityManager;
+	}
+
+	Database& database() {
+		return *m_database;
+	}
+
+	MigrationManager& migrationManager() {
+		return *m_migrations;
+	}
+
+	JsonMapper& jsonMapper() {
+		return m_jsonMapper;
+	}
+
 private:
+	EntityRegistry m_entityRegistry;
+	JsonMapper m_jsonMapper;
 	Router m_router;
 	HttpServer m_server;
-	EntityRegistry m_entityRegistry;
-	EntityManager m_entityManager;
 
 	std::unique_ptr<Database> m_database;
+	std::unique_ptr<EntityManager> m_entityManager;
+	std::unique_ptr<MigrationManager> m_migrations;
 	std::unique_ptr<ResourceManager> m_resources;
 	std::unique_ptr<MimeTypeRegistry> m_mimeTypes;
 	std::unique_ptr<StaticFileHandler> m_staticFiles;

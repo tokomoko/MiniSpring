@@ -2,11 +2,13 @@
 
 #include"ResourceManager.h"
 
+#include"../core/Core.h"
+
 #include"../web/HttpRequest.h"
 #include"../web/HttpResponse.h"
 #include"../web/MimeTypeRegistry.h"
 
-class StaticFileHandler {
+class MINISPRING_API StaticFileHandler {
 public:
 	StaticFileHandler(ResourceManager& resources, MimeTypeRegistry& mimeTypes);
 

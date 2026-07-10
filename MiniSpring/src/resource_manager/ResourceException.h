@@ -1,9 +1,11 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include <exception>
 #include <string>
 
-class ResourceException : public std::exception {
+class MINISPRING_API ResourceException : public std::exception {
 public:
 	enum class Type {
 		NotFound,

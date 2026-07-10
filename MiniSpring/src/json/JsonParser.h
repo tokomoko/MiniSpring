@@ -1,10 +1,12 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include"JsonValue.h"
 
 #include<string>
 
-class JsonParser {
+class MINISPRING_API JsonParser {
 public:
 	JsonParser(const std::string& input);
 	JsonValue parse();

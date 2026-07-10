@@ -10,6 +10,8 @@
 #include<string>
 #include<vector>
 
+#include<sqlite3.h>
+
 SQLitePreparedStatement::SQLitePreparedStatement(sqlite3* database, const std::string& sql)
 	: m_statement(nullptr), m_sql(sql) {
 

@@ -7,7 +7,7 @@
 
 #pragma comment(lib,"ws2_32.lib")
 
-HttpServer::HttpServer(IRequestHandler& r) : m_reqHandler(&r) {
+HttpServer::HttpServer(IRequestHandler& r, JsonMapper& mapper) : m_reqHandler(&r), m_mapper(mapper) {
 	WSADATA data;
 	int result = WSAStartup(MAKEWORD(2, 2), &data);
 
@@ -48,8 +48,8 @@ void HttpServer::listen(int port) {
 		int size = recv(client, buffer, sizeof(buffer), 0);
 		std::string raw(buffer, size);
 
-		HttpRequest request(raw);
-		std::cout << "[REQUEST] " << request.method() << " " << request.path() << std::endl;
+		HttpRequest request(raw, m_mapper);
+		//std::cout << "[REQUEST] " << request.method() << " " << request.path() << std::endl;
 
 		HttpResponse response;
 		bool found = m_reqHandler->handle(request, response);
@@ -60,7 +60,7 @@ void HttpServer::listen(int port) {
 		}
 
 		std::string data = response.build();
-		std::cout << "[RESPONSE] " << data << std::endl;
+		//std::cout << "[RESPONSE] " << data << std::endl;
 
 		send(client, data.c_str(), data.size(), 0);
 

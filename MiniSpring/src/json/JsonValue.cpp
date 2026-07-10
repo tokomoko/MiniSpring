@@ -4,6 +4,8 @@
 
 JsonValue::JsonValue() : m_value(Value(nullptr)) {}
 
+JsonValue::JsonValue(const Value& value) : m_value(value) {}
+
 JsonValue::JsonValue(const char* v) : m_value(Value(std::string(v))) {}
 
 JsonValue::JsonValue(std::string v) : m_value(Value(v)) {}
@@ -19,7 +21,7 @@ JsonValue::JsonValue(JsonArray v) : m_value(v) {}
 JsonValue::JsonValue(JsonObject v) : m_value(v) {}
 
 std::string JsonValue::asString() const {
-	return std::get<Value>(m_value).get<std::string>();
+	return as<Value>().get<std::string>();
 }
 
 std::string JsonValue::stringify() const {
@@ -57,4 +59,14 @@ std::string JsonValue::stringify() const {
 	}
 
 	return "";
+}
+
+JsonValue& JsonValue::operator[](const std::string& key) {
+	if (std::holds_alternative<Value>(m_value) && std::get<Value>(m_value).isNull())
+		m_value = JsonObject{};
+
+	if (!std::holds_alternative<JsonObject>(m_value))
+		throw std::runtime_error("JsonValue is not an object");
+
+	return std::get<JsonObject>(m_value)[key];
 }

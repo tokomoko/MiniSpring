@@ -1,9 +1,11 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include<string>
 #include<unordered_map>
 
-class MimeTypeRegistry
+class MINISPRING_API MimeTypeRegistry
 {
 public:
 	MimeTypeRegistry();

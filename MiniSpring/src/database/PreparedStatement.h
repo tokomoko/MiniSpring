@@ -1,11 +1,12 @@
 #pragma once
 
-#include <string>
-
+#include"../core/Core.h"
 #include "../core/Value.h"
 #include "QueryResult.h"
 
-class PreparedStatement {
+#include <string>
+
+class MINISPRING_API PreparedStatement {
 public:
 	virtual ~PreparedStatement() = default;
 

@@ -1,9 +1,11 @@
 #pragma once
 
-class HttpRequest;
-class HttpResponse;
+#include"Core.h"
 
-class IRequestHandler {
+class MINISPRING_API HttpRequest;
+class MINISPRING_API HttpResponse;
+
+class MINISPRING_API IRequestHandler {
 public:
 	virtual ~IRequestHandler() = default;
 

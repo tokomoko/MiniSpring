@@ -1,7 +1,9 @@
 #pragma once
 
+#include"../../core/Core.h"
+
 #include <string>
 
 namespace MigrationUtils {
-	std::string checksum(const std::string& text);
+	MINISPRING_API std::string checksum(const std::string& text);
 }

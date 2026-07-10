@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include<cstdint>
 
 constexpr uint32_t BIT(unsigned bit) {

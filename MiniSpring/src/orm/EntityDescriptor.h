@@ -2,6 +2,8 @@
 
 #include"EntityDescriptorBase.h"
 
+#include"../core/Core.h"
+
 #include"../reflection/TypeDescriptor.h"
 #include"../reflection/FieldFlag.h"
 #include"../reflection/FieldMetadata.h"
@@ -9,10 +11,10 @@
 #include<string>
 
 template<typename T>
-class EntityDescriptor : public EntityDescriptorBase {
+class  EntityDescriptor : public EntityDescriptorBase {
 public:
 
-	EntityDescriptor(std::string table, TypeDescriptor<T>& type) : m_table(std::move(table)), m_type(type) {}
+	EntityDescriptor(std::string table, TypeDescriptor<T> type) : m_table(std::move(table)), m_type(std::move(type)) {}
 
 	FieldBase& primaryKey() {
 		for (auto& field : m_type.fields) {
@@ -47,5 +49,5 @@ public:
 
 private:
 	std::string m_table;
-	TypeDescriptor<T>& m_type;
+	TypeDescriptor<T> m_type;
 };

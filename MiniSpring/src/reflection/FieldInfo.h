@@ -1,5 +1,7 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include"FieldBase.h"
 
 template<typename Class, typename Type>

@@ -1,12 +1,10 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include"FieldFlag.h"
 
-//struct FieldMetadata {
-//	bool primaryKey = false;
-//};
-
-class FieldMetadata
+class MINISPRING_API FieldMetadata
 {
 public:
 
