@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../models/Todo.h"
+#include"../models/Todo.h"
+#include"../dto/TodoUpdateRequest.h"
 
-#include <MiniSpring.h>
+#include<MiniSpring.h>
 
 
 class TodoController : public Controller {
@@ -42,20 +43,19 @@ public:
 			return Result<HttpResponse, HttpError>::success(res);
 		});
 
-		/*router.addRoute("PUT", "/todos/{id}", [this](HttpRequest& req) {
+		router.addRoute("PUT", "/todos/{id}", [this](HttpRequest& req) {
 			HttpResponse res;
 			int id = std::stoi(req.pathParameter("id"));
 
 			auto todo = m_manager.find<Todo>(id);
 			if (!todo) return Result<HttpResponse, HttpError>::error(HttpError(404, "Todo not found"));
 
-			//JsonValue json = req.json<JsonValue>();
-			//bool completed = json["completed"].as<bool>();
-			todo->completed = completed;
+			TodoUpdateRequest update = req.json<TodoUpdateRequest>();	
+			todo->completed = update.completed;
 			m_manager.update(todo.value());
 			res.json(m_mapper.toJson(todo.value()));
 			return Result<HttpResponse, HttpError>::success(res);
-		});*/
+		});
 	}
 
 private:

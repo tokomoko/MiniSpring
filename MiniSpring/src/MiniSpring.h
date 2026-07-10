@@ -20,6 +20,9 @@
 #include"web/HttpRequest.h"
 #include"web/HttpResponse.h"
 
+#include"web/exceptions/HttpException.h"
+#include"web/exceptions/NotFoundException.h"
+
 #include"resource_manager/Platform.h"
 #include"resource_manager/StaticFileHandler.h"
 #include"resource_manager/ResourceManager.h"

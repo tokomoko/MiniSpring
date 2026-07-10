@@ -35,6 +35,11 @@ public:
 		return m_mapper.fromJson<T>(value);
 	}
 
+	JsonValue jsonValue() {
+		JsonParser parser(m_body);
+		return parser.parse();
+	}
+
 private:
 	std::string m_requestMethod;
 	std::string m_requestPath;
