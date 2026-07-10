@@ -34,12 +34,9 @@ void HttpServer::listen(int port) {
 
 	int result = bind(m_serverSocket, (sockaddr*)&address, sizeof(address));
 
-	if (result == SOCKET_ERROR)
-		throw std::runtime_error("Bind failed");
+	if (result == SOCKET_ERROR) throw std::runtime_error("Bind failed");
 
 	::listen(m_serverSocket, SOMAXCONN);
-
-	std::cout << "MiniSpring running on port " << port << std::endl;
 
 	while (true) {
 		SOCKET client = accept(m_serverSocket, nullptr, nullptr);

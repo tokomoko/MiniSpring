@@ -4,12 +4,10 @@
 
 struct TodoUpdateRequest {
 	bool completed;
+
+	static EntityDescriptor<TodoUpdateRequest> descriptor() {
+		TypeDescriptor<TodoUpdateRequest> type;
+		type.addField(std::make_shared<FieldInfo<TodoUpdateRequest, bool>>("completed", &TodoUpdateRequest::completed, FieldMetadata(FieldFlag::None)));
+		return EntityDescriptor<TodoUpdateRequest>("todos", type);
+	}
 };
-
-inline void registerTodoUpdateRequest(EntityRegistry& registry) {
-	TypeDescriptor<TodoUpdateRequest> type;
-	type.addField(std::make_shared<FieldInfo<TodoUpdateRequest, bool>>("completed", &TodoUpdateRequest::completed, FieldMetadata(FieldFlag::None)));
-	EntityDescriptor<TodoUpdateRequest> entity("todos", type);
-
-	registry.registerEntity(entity);
-}

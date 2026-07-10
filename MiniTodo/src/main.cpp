@@ -1,6 +1,5 @@
 #include<MiniSpring.h>
 
-#include"models/TodoEntity.h"
 #include"controllers/TodoController.h"
 #include"dto/TodoUpdateRequest.h"
 
@@ -13,8 +12,8 @@ int main() {
 		app.migrations("resources/migrations");
 		app.staticFiles("resources/static");
 
-		registerTodoEntity(app.entities());
-		registerTodoUpdateRequest(app.entities());
+		app.registerEntity<Todo>();
+		app.registerEntity<TodoUpdateRequest>();
 
 		app.migrate();
 		app.registerController<TodoController>(app);
@@ -29,5 +28,4 @@ int main() {
 	catch (std::exception e) {
 		std::cerr << e.what() << std::endl;
 	}
-
 }

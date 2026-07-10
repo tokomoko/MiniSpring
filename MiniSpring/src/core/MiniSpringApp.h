@@ -36,10 +36,6 @@
 #include"../json/JsonSerializer.h"
 #include"../json/JsonMapper.h"
 
-#include"../view/Model.h"
-#include"../view/View.h"
-#include"../view/TemplateEngine.h"
-
 class MINISPRING_API MiniSpringApp : public IRequestHandler {
 public:
 	MiniSpringApp();
@@ -69,6 +65,11 @@ public:
 		return m_entityRegistry;
 	}
 
+	template<typename T>
+	void registerEntity() {
+		m_entityRegistry.registerEntity<T>();
+	}
+
 
 	EntityManager& entityManager() {
 		return *m_entityManager;
@@ -91,7 +92,6 @@ private:
 	JsonMapper m_jsonMapper;
 	Router m_router;
 	HttpServer m_server;
-	TemplateEngine m_templateEngine;
 
 	std::unique_ptr<Database> m_database;
 	std::unique_ptr<EntityManager> m_entityManager;

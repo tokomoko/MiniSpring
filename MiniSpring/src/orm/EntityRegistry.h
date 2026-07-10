@@ -26,6 +26,11 @@ public:
 	}
 
 	template<typename T>
+	void registerEntity() {
+		registerEntity(T::descriptor());
+	}
+
+	template<typename T>
 	EntityDescriptor<T>& get() {
 		auto it = m_entities.find(typeid(T));
 		if (it == m_entities.end()) throw std::runtime_error("Entity not registered");
