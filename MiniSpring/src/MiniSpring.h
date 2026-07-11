@@ -50,3 +50,5 @@
 #include"orm/Repository.h"
 
 #include"utils/FileUtils.h"
+
+#include"markdown/MarkdownRenderer.h"

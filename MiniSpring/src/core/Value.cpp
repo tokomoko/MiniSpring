@@ -32,12 +32,12 @@ std::string Value::toJsonString() const {
 	if (isBoolean()) return get<bool>() ? "true" : "false";
 	if (isInteger()) return std::to_string(get<int>());
 	if (isDouble()) return std::to_string(get<double>());
-	if (isString()) return "\"" + get<std::string>() + "\"";
+	if (isString()) return "\"" + escape(get<std::string>()) + "\"";
 
 	throw std::runtime_error("Unknown Value type");
 }
 
-std::string Value::escape(const std::string& s) {
+std::string Value::escape(const std::string& s) const {
 	std::string result;
 	result.reserve(s.size());
 

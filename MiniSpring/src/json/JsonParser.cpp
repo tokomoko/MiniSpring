@@ -126,7 +126,7 @@ JsonValue JsonParser::parseString() {
 			}
 
 			default:
-				result += escaped;
+				throw std::runtime_error("Invalid escape sequence");
 			}
 
 

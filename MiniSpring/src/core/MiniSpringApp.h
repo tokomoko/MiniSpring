@@ -36,6 +36,8 @@
 #include"../json/JsonSerializer.h"
 #include"../json/JsonMapper.h"
 
+#include"../markdown/MarkdownRenderer.h"
+
 class MINISPRING_API MiniSpringApp : public IRequestHandler {
 public:
 	MiniSpringApp();
@@ -87,11 +89,16 @@ public:
 		return m_jsonMapper;
 	}
 
+	MarkdownRenderer& markdownRenderer() {
+		return m_markDownRenderer;
+	}
+
 private:
 	EntityRegistry m_entityRegistry;
 	JsonMapper m_jsonMapper;
 	Router m_router;
 	HttpServer m_server;
+	MarkdownRenderer m_markDownRenderer;
 
 	std::unique_ptr<Database> m_database;
 	std::unique_ptr<EntityManager> m_entityManager;

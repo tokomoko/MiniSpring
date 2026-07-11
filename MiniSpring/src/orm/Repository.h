@@ -32,6 +32,10 @@ public:
 		m_manager.remove(entity);
 	}
 
+	void removeById(Value id) {
+		m_manager.removeById<T>(id);
+	}
+
 private:
 	EntityManager& m_manager;
 };

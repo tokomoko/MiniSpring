@@ -45,9 +45,14 @@ std::string HttpResponse::build() {
 	return response.str();
 }
 
-void HttpResponse::json(const JsonValue& json) {
+void HttpResponse::json(const JsonValue& value) {
+	std::string text = value.stringify();
+
+	std::cout << "JSON RESPONSE:\n";
+	std::cout << text << std::endl;
+
 	header("Content-Type", "application/json");
-	body(json.stringify());
+	body(text);
 }
 
 void HttpResponse::html(const std::string& content) {

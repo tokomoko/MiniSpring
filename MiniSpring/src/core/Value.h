@@ -18,7 +18,7 @@ public:
 	Value(const char* value);
 	Value(std::string value);
 
-	std::string escape(const std::string& s);
+	std::string escape(const std::string& s) const;
 
 	const Type& data() const {
 		return m_value;

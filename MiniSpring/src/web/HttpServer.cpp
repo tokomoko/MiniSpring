@@ -4,6 +4,7 @@
 #include"HttpResponse.h"
 
 #include<iostream>
+#include<sstream>
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -41,12 +42,10 @@ void HttpServer::listen(int port) {
 	while (true) {
 		SOCKET client = accept(m_serverSocket, nullptr, nullptr);
 
-		char buffer[4096];
-		int size = recv(client, buffer, sizeof(buffer), 0);
-		std::string raw(buffer, size);
+		std::string raw = receiveRequest(client);
 
 		HttpRequest request(raw, m_mapper);
-		//std::cout << "[REQUEST] " << request.method() << " " << request.path() << std::endl;
+		std::cout << "[REQUEST] " << request.method() << " " << request.path() << std::endl;
 
 		HttpResponse response;
 		bool found = m_reqHandler->handle(request, response);
@@ -57,10 +56,55 @@ void HttpServer::listen(int port) {
 		}
 
 		std::string data = response.build();
-		//std::cout << "[RESPONSE] " << data << std::endl;
+		std::cout << "[RESPONSE] " << data << std::endl;
 
-		send(client, data.c_str(), data.size(), 0);
+		sendAll(client, data);
 
 		closesocket(client);
 	}
+}
+
+bool HttpServer::sendAll(SOCKET socket, const std::string& data) {
+	size_t totalSent = 0;
+
+	while (totalSent < data.size())
+	{
+		int sent = send(socket, data.c_str() + totalSent, static_cast<int>(data.size() - totalSent), 0);
+		if (sent == SOCKET_ERROR) return false;
+		totalSent += sent;
+	}
+
+	return true;
+}
+
+std::string HttpServer::receiveRequest(SOCKET client)
+{
+	std::string request;
+
+	char buffer[4096];
+
+
+	while (true)
+	{
+		int received = recv(
+			client,
+			buffer,
+			sizeof(buffer),
+			0
+		);
+
+
+		if (received <= 0)
+			break;
+
+
+		request.append(buffer, received);
+
+
+		if (received < sizeof(buffer))
+			break;
+	}
+
+
+	return request;
 }

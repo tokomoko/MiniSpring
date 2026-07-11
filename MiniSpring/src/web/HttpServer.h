@@ -15,6 +15,10 @@ public:
 	void listen(int port);
 
 private:
+	bool sendAll(SOCKET socket, const std::string& data);
+	std::string receiveRequest(SOCKET client);
+
+private:
 	SOCKET m_serverSocket;
 	IRequestHandler* m_reqHandler;
 
