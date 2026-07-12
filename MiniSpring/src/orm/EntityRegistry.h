@@ -20,14 +20,15 @@ public:
 	EntityRegistry& operator=(EntityRegistry&&) noexcept = default;
 
 	template<typename T>
-	void registerEntity(EntityDescriptor<T> descriptor) {
+	EntityRegistry& registerEntity(EntityDescriptor<T> descriptor) {
 		auto owned = std::make_unique<EntityDescriptor<T>>(std::move(descriptor));
 		m_entities[typeid(T)] = std::move(owned);
+		return *this;
 	}
 
 	template<typename T>
-	void registerEntity() {
-		registerEntity(T::descriptor());
+	EntityRegistry& registerEntity() {
+		return registerEntity(T::descriptor());
 	}
 
 	template<typename T>

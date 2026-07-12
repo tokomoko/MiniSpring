@@ -11,25 +11,37 @@
 int main() {
 	try {
 		MiniSpringApp app;
-		app.database("blog.db");
-		app.migrations("resources/migrations");
-		app.staticFiles("resources/static");
+		app.server()
+			.port(8080);
 
-		app.registerEntity<Post>();
-		app.registerEntity<PostCreateRequest>();
-		app.registerEntity<PostUpdateRequest>();
+		app.database()
+			.file("blog.db")
+			.migrations("resources/migrations");
 
+		app.staticFiles()
+			.directory("resources/static");
+
+		app.entities()
+			.registerEntity<Post>()
+			.registerEntity<PostCreateRequest>()
+			.registerEntity<PostUpdateRequest>();
+
+		app.build();
+
+		app.controllers()
+			.registerController<PostController>(app);
+		
+		app.initControllers();
 		app.migrate();
-		app.registerController<PostController>(app);
-		app.listen(8080);
+		app.listen();
 	}
-	catch (DatabaseException e) {
+	catch (const DatabaseException& e) {
 		std::cerr << e.what() << std::endl;
 	}
-	catch (HttpException e) {
+	catch (const HttpException& e) {
 		std::cerr << e.what() << std::endl;
 	}
-	catch (std::exception e) {
+	catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
 }

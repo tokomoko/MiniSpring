@@ -7,6 +7,7 @@
 #include"../web/Router.h"
 #include"../web/HttpServer.h"
 #include"../web/Controller.h"
+#include"../web/ControllerRegistry.h"
 #include"../web/MimeTypeRegistry.h"
 
 #include"../resource_manager/Platform.h"
@@ -38,6 +39,10 @@
 
 #include"../markdown/MarkdownRenderer.h"
 
+#include"../config/DatabaseConfiguration.h"
+#include"../config/ServerConfiguration.h"
+#include"../config/StaticFilesConfiguration.h"
+
 class MINISPRING_API MiniSpringApp : public IRequestHandler {
 public:
 	MiniSpringApp();
@@ -46,51 +51,25 @@ public:
 
 	void GET(const std::string& path, Router::Handler handler);
 	void POST(const std::string& path, Router::Handler handler);
-
-	void listen(int port);
-
-	template<typename T, typename... Args>
-	void registerController(Args&&... args) {
-		controllers.push_back(std::make_unique<T>(std::forward<Args>(args)...));
-		controllers.back()->registerRoutes(m_router);
-	}
-
-	void staticFiles(const std::filesystem::path& path);
-	void database(const std::filesystem::path& path);
-
 	bool handle(HttpRequest& request, HttpResponse& response) override;
-
-	void migrations(const std::filesystem::path& path);
 	void migrate();
-
-	EntityRegistry& entities() {
-		return m_entityRegistry;
-	}
+	void listen();
+	void build();
+	void initControllers();
+	
+	EntityManager& entityManager();
+	EntityRegistry& entities();
+	MigrationManager& migrationManager();
+	JsonMapper& jsonMapper();
+	MarkdownRenderer& markdownRenderer();
+	ServerConfiguration& server();
+	DatabaseConfiguration& database();
+	StaticFilesConfiguration& staticFiles();
+	ControllerRegistry& controllers();
 
 	template<typename T>
 	void registerEntity() {
 		m_entityRegistry.registerEntity<T>();
-	}
-
-
-	EntityManager& entityManager() {
-		return *m_entityManager;
-	}
-
-	Database& database() {
-		return *m_database;
-	}
-
-	MigrationManager& migrationManager() {
-		return *m_migrations;
-	}
-
-	JsonMapper& jsonMapper() {
-		return m_jsonMapper;
-	}
-
-	MarkdownRenderer& markdownRenderer() {
-		return m_markDownRenderer;
 	}
 
 private:
@@ -100,12 +79,16 @@ private:
 	HttpServer m_server;
 	MarkdownRenderer m_markDownRenderer;
 
+	ServerConfiguration m_serverConfiguration;
+	DatabaseConfiguration m_databaseConfiguration;
+	StaticFilesConfiguration m_staticFilesConfiguration;
+
+	ControllerRegistry m_controllers;
+
 	std::unique_ptr<Database> m_database;
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<MigrationManager> m_migrations;
 	std::unique_ptr<ResourceManager> m_resources;
 	std::unique_ptr<MimeTypeRegistry> m_mimeTypes;
 	std::unique_ptr<StaticFileHandler> m_staticFiles;
-
-	std::vector<std::unique_ptr<Controller>>controllers;
 };
