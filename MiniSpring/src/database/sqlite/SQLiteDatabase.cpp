@@ -5,6 +5,7 @@
 #include"SQLiteUtils.h"
 
 #include"../DatabaseException.h"
+#include"../DatabaseLock.h"
 
 #include<iostream>
 #include<string>
@@ -83,5 +84,6 @@ std::unique_ptr<PreparedStatement> SQLiteDatabase::prepare(const std::string& sq
 }
 
 Value SQLiteDatabase::lastInsertId() {
+	DatabaseGuard guard;
 	return static_cast<int>(sqlite3_last_insert_rowid(m_database));
 }

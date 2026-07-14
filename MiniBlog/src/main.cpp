@@ -4,35 +4,47 @@
 #include"models/PostCreateRequest.h"
 #include"models/PostUpdateRequest.h"
 
-#include"controllers/PostController.h"
+#include"repositories/PostRepository.h"
 
-#include<iostream>
+#include"services/PostService.h"
+
+#include"controllers/PostController.h"
 
 int main() {
 	try {
 		MiniSpringApp app;
-		app.server()
+
+		auto& database = app.modules().add<DatabaseModule>();
+		database.configuration()
+			.file(executableDirectory()/"blog.db")
+			.migrations(executableDirectory()/"resources/migrations");
+
+		auto& http = app.modules().add<HttpModule>();
+		http.configuration()
 			.port(8080);
 
-		app.database()
-			.file("blog.db")
-			.migrations("resources/migrations");
+		http.staticFiles().directory(executableDirectory()/"resources/static");
 
-		app.staticFiles()
-			.directory("resources/static");
-
-		app.entities()
+		app.services().get<EntityRegistry>()
 			.registerEntity<Post>()
 			.registerEntity<PostCreateRequest>()
 			.registerEntity<PostUpdateRequest>();
 
+		app.services().add<MarkdownRenderer>(std::make_unique<MarkdownRenderer>());
+
+		app.configure();
 		app.build();
 
-		app.controllers()
-			.registerController<PostController>(app);
-		
-		app.initControllers();
-		app.migrate();
+		auto& entityManager = app.services().get<EntityManager>();
+		app.services().add<PostRepository>(std::make_unique<PostRepository>(entityManager));
+
+		auto& repository = app.services().get<PostRepository>();
+		app.services().add<PostService>(std::make_unique<PostService>(repository));
+
+		database.migrate();
+
+		http.controllers().registerController<PostController>(app);
+
 		app.listen();
 	}
 	catch (const DatabaseException& e) {

@@ -1,6 +1,6 @@
 #include"DatabaseConfiguration.h"
 
-DatabaseConfiguration& DatabaseConfiguration::file(const std::string& file) {
+DatabaseConfiguration& DatabaseConfiguration::file(const std::filesystem::path& file) {
 	m_file = file;
 	return *this;
 }
@@ -10,7 +10,7 @@ DatabaseConfiguration& DatabaseConfiguration::migrations(const std::filesystem::
 	return *this;
 }
 
-const std::string& DatabaseConfiguration::file() const {
+const std::filesystem::path& DatabaseConfiguration::file() const {
 	return m_file;
 }
 

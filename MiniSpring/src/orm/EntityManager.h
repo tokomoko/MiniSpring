@@ -4,6 +4,7 @@
 
 #include "../database/Database.h"
 #include "../database/PreparedStatement.h"
+#include "../database/DatabaseLock.h"
 
 #include "EntityRegistry.h"
 
@@ -16,6 +17,8 @@ public:
 
 	template<typename T>
 	void persist(T& entity) {
+		DatabaseGuard guard; // executeUpdate() + lastInsertId() must be atomic as a pair
+
 		auto& descriptor = m_registry.get<T>();
 		std::string sql = "INSERT INTO ";
 		sql += descriptor.table();
@@ -64,6 +67,8 @@ public:
 
 	template<typename T>
 	std::optional<T> find(Value id) {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 
@@ -83,6 +88,8 @@ public:
 
 	template<typename T>
 	std::vector<T> findAll() {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		std::string sql = "SELECT * FROM ";
 		sql += descriptor.table();
@@ -99,6 +106,8 @@ public:
 
 	template<typename T>
 	void update(const T& entity) {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 
@@ -143,6 +152,8 @@ public:
 
 	template<typename T>
 	void remove(const T& entity) {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 
@@ -160,6 +171,8 @@ public:
 
 	template<typename T>
 	void removeById(Value id) {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 
@@ -176,6 +189,8 @@ public:
 
 	template<typename T>
 	bool exists(Value id) {
+		DatabaseGuard guard;
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 
@@ -194,6 +209,8 @@ public:
 
 	template<typename T>
 	void save(const T& entity) {
+		DatabaseGuard guard; // covers exists() + update()/persist() as one atomic decision
+
 		auto& descriptor = m_registry.get<T>();
 		auto& pk = descriptor.primaryKey();
 		Value id = pk.get((void*)&entity);

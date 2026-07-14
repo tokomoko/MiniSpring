@@ -36,6 +36,6 @@ public:
 		m_manager.removeById<T>(id);
 	}
 
-private:
+protected:
 	EntityManager& m_manager;
 };

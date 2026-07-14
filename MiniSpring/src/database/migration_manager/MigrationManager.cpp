@@ -2,6 +2,8 @@
 
 #include"MigrationUtils.h"
 
+#include"../DatabaseLock.h"
+
 #include<fstream>
 #include<sstream>
 #include<iostream>
@@ -92,6 +94,8 @@ bool MigrationManager::isApplied(const Migration& migration) {
 }
 
 void MigrationManager::apply(const Migration& migration) {
+	DatabaseGuard guard;
+
 	std::cout << "Applying migration " << migration.version << ": " << migration.name << "\n";
 
 	m_database.beginTransaction();
@@ -100,14 +104,14 @@ void MigrationManager::apply(const Migration& migration) {
 		m_database.execute(migration.sql);
 
 		auto statement = m_database.prepare("INSERT INTO schema_version(version,name,checksum) VALUES(?,?,?)");
-
 		statement->bind(0, migration.version);
 		statement->bind(1, migration.name);
 		statement->bind(2, migration.checksum);
 		statement->executeUpdate();
 
 		m_database.commit();
-	} catch (...) {
+	}
+	catch (...) {
 		m_database.rollback();
 		throw;
 	}

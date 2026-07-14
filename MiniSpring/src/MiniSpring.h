@@ -4,6 +4,7 @@
 #include"core/IRequestHandler.h"
 #include"core/MiniSpringApp.h"
 #include"core/Value.h"
+#include"core/ServiceProvider.h"
 
 #include"json/JsonValue.h"
 #include"json/JsonParser.h"
@@ -19,6 +20,7 @@
 #include"web/HttpHeaders.h"
 #include"web/HttpRequest.h"
 #include"web/HttpResponse.h"
+#include"web/HttpModule.h"
 
 #include"web/exceptions/HttpException.h"
 #include"web/exceptions/NotFoundException.h"
@@ -32,6 +34,9 @@
 #include"database/DatabaseException.h"
 #include"database/PreparedStatement.h"
 #include"database/QueryResult.h"
+#include"database/DatabaseConfiguration.h"
+#include"database/DatabaseContext.h"
+#include"database/DatabaseModule.h"
 
 #include"database/migration_manager/Migration.h"
 #include"database/migration_manager/MigrationManager.h"

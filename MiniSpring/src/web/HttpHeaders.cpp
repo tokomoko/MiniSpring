@@ -18,6 +18,6 @@ bool HttpHeaders::contains(const std::string& name) const {
 		!= m_headers.end();
 }
 
-const const std::unordered_map<std::string, std::string>& HttpHeaders::all() const {
+const std::unordered_map<std::string, std::string>& HttpHeaders::all() const {
 	return m_headers;
 }

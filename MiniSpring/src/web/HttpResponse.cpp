@@ -32,6 +32,8 @@ void HttpResponse::body(const std::string& content) {
 }
 
 std::string HttpResponse::build() {
+	header("Content-Length", std::to_string(m_responseBody.size())); // set first
+
 	std::stringstream response;
 
 	response << "HTTP/1.1 " << m_statusCode << " " << m_statusMessage << "\r\n";
@@ -40,17 +42,12 @@ std::string HttpResponse::build() {
 
 	response << "\r\n";
 	response << m_responseBody;
-	header("Content-Length", std::to_string(m_responseBody.size()));
 
 	return response.str();
 }
 
 void HttpResponse::json(const JsonValue& value) {
 	std::string text = value.stringify();
-
-	std::cout << "JSON RESPONSE:\n";
-	std::cout << text << std::endl;
-
 	header("Content-Type", "application/json");
 	body(text);
 }

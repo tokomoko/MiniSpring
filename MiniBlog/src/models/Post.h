@@ -4,10 +4,10 @@
 
 class Post {
 public:
-	std::string id;          // slug, e.g. "my-first-post" — used as the URL id
+	std::string id;
 	std::string title;
 	std::string content;
-	int createdAt = 0;       // unix timestamp, set on creation
+	int createdAt = 0;
 
 	static EntityDescriptor<Post> descriptor() {
 		TypeDescriptor<Post> type;
