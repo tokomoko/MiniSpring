@@ -21,7 +21,8 @@ int main() {
 
 		auto& http = app.modules().add<HttpModule>();
 		http.configuration()
-			.port(8080);
+			.port(8080)
+			.threads(4);
 
 		http.staticFiles().directory(executableDirectory()/"resources/static");
 
@@ -30,10 +31,11 @@ int main() {
 			.registerEntity<PostCreateRequest>()
 			.registerEntity<PostUpdateRequest>();
 
-		app.services().add<MarkdownRenderer>(std::make_unique<MarkdownRenderer>());
 
 		app.configure();
 		app.build();
+
+		app.services().add<MarkdownRenderer>(std::make_unique<MarkdownRenderer>());
 
 		auto& entityManager = app.services().get<EntityManager>();
 		app.services().add<PostRepository>(std::make_unique<PostRepository>(entityManager));
@@ -42,7 +44,6 @@ int main() {
 		app.services().add<PostService>(std::make_unique<PostService>(repository));
 
 		database.migrate();
-
 		http.controllers().registerController<PostController>(app);
 
 		app.listen();

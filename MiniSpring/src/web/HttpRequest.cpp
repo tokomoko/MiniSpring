@@ -41,9 +41,31 @@ std::string HttpRequest::method() {
 	return m_requestMethod;
 }
 
-
 std::string HttpRequest::path() {
 	return m_requestPath;
+}
+
+std::string HttpRequest::cookie(const std::string& name) const {
+	std::string header = m_headers.get("Cookie");
+	size_t pos = 0;
+
+	while (pos < header.size()) {
+		size_t end = header.find(';', pos);
+		if (end == std::string::npos) end = header.size();
+
+		std::string pair = header.substr(pos, end - pos);
+		size_t eq = pair.find('=');
+		if (eq != std::string::npos) {
+			size_t start = pair.find_first_not_of(' ');
+			std::string key = pair.substr(start, eq - start);
+			if (key == name)
+				return pair.substr(eq + 1);
+		}
+
+		pos = end + 1;
+	}
+
+	return "";
 }
 
 void HttpRequest::setPathParameter(const std::string& name, const std::string& value) {

@@ -12,8 +12,8 @@ class MINISPRING_API HttpResponse {
 public:
 	HttpResponse();
 
-	void send(const std::string& body);
 	void status(int code);
+	void setCookie(const std::string& name, const std::string& value, bool httpOnly = true, const std::string& sameSite = "Strict");
 
 	void header(const std::string& name, const std::string& value);
 	void body(const std::string& content);

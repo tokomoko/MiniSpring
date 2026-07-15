@@ -17,6 +17,8 @@ public:
 	std::string method();
 	std::string path();
 
+	std::string cookie(const std::string& name) const;
+
 	void setPathParameter(const std::string& name, const std::string& value);
 	std::string pathParameter(const std::string& name) const;
 

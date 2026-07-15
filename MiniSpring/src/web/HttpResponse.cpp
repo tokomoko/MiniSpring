@@ -31,6 +31,12 @@ void HttpResponse::body(const std::string& content) {
 	m_responseBody = content;
 }
 
+void HttpResponse::setCookie(const std::string& name, const std::string& value, bool httpOnly, const std::string& sameSite) {
+	std::string cookie = name + "=" + value + "; Path=/; SameSite=" + sameSite;
+	if (httpOnly) cookie += "; HttpOnly";
+	header("Set-Cookie", cookie);
+}
+
 std::string HttpResponse::build() {
 	header("Content-Length", std::to_string(m_responseBody.size())); // set first
 

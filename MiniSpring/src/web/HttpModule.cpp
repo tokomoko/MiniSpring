@@ -8,13 +8,13 @@
 
 void HttpModule::build(ServiceProvider& services) {
 	m_ctx.m_mapper = std::make_unique<JsonMapper>(services.get<EntityRegistry>());
-
 	m_ctx.m_server = std::make_unique<HttpServer>(*this, *m_ctx.m_mapper, m_configuration);
 
 	services.addRef<Router>(m_ctx.router());
 	services.addRef<ControllerRegistry>(m_ctx.controllers());
 	services.addRef<MimeTypeRegistry>(m_ctx.mimeTypes());
 	services.addRef<JsonMapper>(*m_ctx.m_mapper);
+	services.addRef<FilterChain>(m_ctx.filters());
 }
 void HttpModule::start(ServiceProvider& services) {
 	m_ctx.controllers().initialize(m_ctx.router());
@@ -29,6 +29,9 @@ void HttpModule::stop(ServiceProvider& services) {
 }
 
 bool HttpModule::handle(HttpRequest& request, HttpResponse& response) {
+	if (!m_ctx.filters().run(request, response))
+		return true;
+
 	if (m_ctx.router().handle(request, response))
 		return true;
 
