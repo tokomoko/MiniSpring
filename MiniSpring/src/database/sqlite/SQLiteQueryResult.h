@@ -11,7 +11,7 @@
 class MINISPRING_API SQLiteQueryResult : public QueryResult {
 public:
 	SQLiteQueryResult(std::vector<std::vector<Value>> data, std::vector<std::string> columns) : m_data(std::move(data)), m_columns(std::move(columns)) {
-		for (int i = 0; i < m_columns.size(); i++) {
+		for (size_t i = 0; i < m_columns.size(); i++) {
 			m_columnIndexes[m_columns[i]] = i;
 		}
 	}

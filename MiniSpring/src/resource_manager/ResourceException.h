@@ -5,7 +5,7 @@
 #include <exception>
 #include <string>
 
-class MINISPRING_API ResourceException : public std::exception {
+class ResourceException : public std::exception {
 public:
 	enum class Type {
 		NotFound,

@@ -4,24 +4,26 @@
 #include"../models/PostCreateRequest.h"
 #include"../models/PostUpdateRequest.h"
 
-#include"../repositories/PostRepository.h"
+#include"../services/PostService.h"
 
 #include<MiniSpring.h>
 
 #include<algorithm>
-#include<cctype>
-#include<ctime>
 #include<fstream>
 #include<sstream>
 
 class PostController : public Controller {
 public:
-	PostController(MiniSpringApp& app) : m_service(app.services().get<PostService>()), m_mapper(app.services().get<JsonMapper>()), m_markdownRenderer(app.services().get<MarkdownRenderer>()) {}
+	PostController(MiniSpringApp& app)
+		: m_service(app.services().get<PostService>()),
+		m_mapper(app.services().get<JsonMapper>()),
+		m_markdownRenderer(app.services().get<MarkdownRenderer>()),
+		m_security(app.modules().get<SecurityModule>()) {}
 
 	void registerRoutes(Router& router) override {
 		router.addRoute("GET", "/posts/{id}", [this](HttpRequest& req) {
 			HttpResponse res;
-			std::string html = readFile((executableDirectory()/"resources/static/post.html").string());
+			std::string html = readFile((executableDirectory() / "resources/static/post.html").string());
 			res.html(html);
 			return Result<HttpResponse, HttpError>::success(res);
 		});
@@ -29,11 +31,6 @@ public:
 		router.addRoute("GET", "/api/posts", [this](HttpRequest& req) {
 			HttpResponse res;
 			auto posts = m_service.getAllPosts();
-
-			std::sort(posts.begin(), posts.end(), [](const Post& a, const Post& b) {
-				return a.createdAt > b.createdAt; // newest first
-			});
-
 			res.json(m_mapper.toJson(posts));
 			return Result<HttpResponse, HttpError>::success(res);
 		});
@@ -56,7 +53,7 @@ public:
 			Post post = m_service.create(request);
 			res.json(m_mapper.toJson(post));
 			return Result<HttpResponse, HttpError>::success(res);
-		});
+		}, m_security.protect({ "ADMIN" }));
 
 		router.addRoute("PUT", "/api/posts/{id}", [this](HttpRequest& req) {
 			HttpResponse res;
@@ -65,7 +62,7 @@ public:
 			auto post = m_service.update(id, update);
 			res.json(m_mapper.toJson(post));
 			return Result<HttpResponse, HttpError>::success(res);
-		});
+		}, m_security.protect({ "ADMIN" }));
 
 		router.addRoute("DELETE", "/api/posts/{id}", [this](HttpRequest& req) {
 			HttpResponse res;
@@ -73,15 +70,13 @@ public:
 			m_service.deletePost(id);
 			res.status(204);
 			return Result<HttpResponse, HttpError>::success(res);
-		});
+		}, m_security.protect({ "ADMIN" }));
 	}
 
 private:
 	static std::string readFile(const std::string& path) {
 		std::ifstream file(path, std::ios::binary);
-		if (!file) {
-			throw std::runtime_error("PostController: could not open file: " + path);
-		}
+		if (!file) throw std::runtime_error("PostController: could not open file: " + path);
 		std::ostringstream ss;
 		ss << file.rdbuf();
 		return ss.str();
@@ -90,4 +85,5 @@ private:
 	PostService& m_service;
 	JsonMapper& m_mapper;
 	MarkdownRenderer& m_markdownRenderer;
+	SecurityModule& m_security;
 };

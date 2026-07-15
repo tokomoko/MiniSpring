@@ -1,39 +1,49 @@
 #pragma once
 
+#include"../core/Core.h"
 #include"Authentication.h"
+#include"Session.h"
+#include"../orm/EntityManager.h"
 
-#include<unordered_map>
 #include<optional>
-#include<mutex>
 #include<random>
 #include<sstream>
 #include<iomanip>
+#include<ctime>
 
-class SessionManager {
+class MINISPRING_API SessionManager {
 public:
+	SessionManager(EntityManager& entityManager, int ttlSeconds = 86400)
+		: m_entityManager(entityManager), m_ttlSeconds(ttlSeconds) {}
+
 	std::string createSession(const Authentication& auth) {
-		std::string id = generateSessionId();
-		std::lock_guard<std::mutex> lock(m_mutex);
-		m_sessions[id] = auth;
-		return id;
+		Session session;
+		session.id = generateSessionId();
+		session.username = auth.principal();
+		session.authorities = join(auth.authorities());
+		session.expiresAt = static_cast<int>(std::time(nullptr)) + m_ttlSeconds;
+
+		m_entityManager.persist(session);
+		return session.id;
 	}
 
 	std::optional<Authentication> getSession(const std::string& id) {
-		std::lock_guard<std::mutex> lock(m_mutex);
-		auto it = m_sessions.find(id);
-		if (it == m_sessions.end()) return std::nullopt;
-		return it->second;
+		auto session = m_entityManager.find<Session>(id);
+		if (!session) return std::nullopt;
+
+		if (session->expiresAt < static_cast<int>(std::time(nullptr))) {
+			m_entityManager.removeById<Session>(Value(id));
+			return std::nullopt;
+		}
+
+		return Authentication(session->username, split(session->authorities));
 	}
 
 	void destroySession(const std::string& id) {
-		std::lock_guard<std::mutex> lock(m_mutex);
-		m_sessions.erase(id);
+		m_entityManager.removeById<Session>(Value(id));
 	}
 
 private:
-	// std::random_device + mt19937_64, 128 bits of entropy hex-encoded --
-	// session IDs must be unguessable, not just unique, or an attacker who
-	// can predict the next ID can hijack another user's session outright.
 	static std::string generateSessionId() {
 		std::random_device rd;
 		std::mt19937_64 gen1(rd()), gen2(rd());
@@ -45,7 +55,25 @@ private:
 		return ss.str();
 	}
 
+	static std::string join(const std::vector<std::string>& parts) {
+		std::string out;
+		for (size_t i = 0; i < parts.size(); i++) {
+			if (i) out += ",";
+			out += parts[i];
+		}
+		return out;
+	}
+
+	static std::vector<std::string> split(const std::string& text) {
+		std::vector<std::string> parts;
+		std::stringstream ss(text);
+		std::string part;
+		while (std::getline(ss, part, ','))
+			if (!part.empty()) parts.push_back(part);
+		return parts;
+	}
+
 private:
-	std::unordered_map<std::string, Authentication> m_sessions;
-	std::mutex m_mutex;
+	EntityManager& m_entityManager;
+	int m_ttlSeconds;
 };

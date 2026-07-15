@@ -31,10 +31,15 @@ void HttpResponse::body(const std::string& content) {
 	m_responseBody = content;
 }
 
-void HttpResponse::setCookie(const std::string& name, const std::string& value, bool httpOnly, const std::string& sameSite) {
+void HttpResponse::setCookie(const std::string& name, const std::string& value, bool httpOnly, const std::string& sameSite, int maxAgeSeconds) {
 	std::string cookie = name + "=" + value + "; Path=/; SameSite=" + sameSite;
+	if (maxAgeSeconds >= 0) cookie += "; Max-Age=" + std::to_string(maxAgeSeconds);
 	if (httpOnly) cookie += "; HttpOnly";
 	header("Set-Cookie", cookie);
+}
+
+void HttpResponse::clearCookie(const std::string& name) {
+	setCookie(name, "", true, "Strict", 0);
 }
 
 std::string HttpResponse::build() {

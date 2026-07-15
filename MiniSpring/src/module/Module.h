@@ -1,8 +1,10 @@
 #pragma once
 
+#include"../core/Core.h"
+
 class ServiceProvider;
 
-class Module {
+class MINISPRING_API Module {
 public:
 	virtual ~Module() = default;
 

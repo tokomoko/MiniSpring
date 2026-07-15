@@ -1,11 +1,13 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include"IPasswordEncoder.h"
 
 #include<cstdint>
 #include<string>
 
-class Argon2PasswordEncoder : public IPasswordEncoder {
+class MINISPRING_API Argon2PasswordEncoder : public IPasswordEncoder {
 public:
 	std::string encode(const std::string& raw) override;
 	bool matches(const std::string& raw, const std::string& encoded) override;

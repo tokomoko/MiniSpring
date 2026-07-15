@@ -10,8 +10,8 @@ struct LoginRequest {
 
 	static EntityDescriptor<LoginRequest> descriptor() {
 		TypeDescriptor<LoginRequest> type;
-		type.addField(std::make_shared<FieldInfo<LoginRequest, int>>("username", &LoginRequest::username, FieldMetadata(FieldFlag::None)));
-		type.addField(std::make_shared<FieldInfo<LoginRequest, std::string>>("username", &LoginRequest::password, FieldMetadata(FieldFlag::None)));
+		type.addField(std::make_shared<FieldInfo<LoginRequest, std::string>>("username", &LoginRequest::username, FieldMetadata(FieldFlag::None)));
+		type.addField(std::make_shared<FieldInfo<LoginRequest, std::string>>("password", &LoginRequest::password, FieldMetadata(FieldFlag::None)));
 		return EntityDescriptor<LoginRequest>("users", type);
 	}
 };

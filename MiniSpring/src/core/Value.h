@@ -39,12 +39,8 @@ public:
 			if (is<bool>()) return std::get<bool>(m_value) ? 1 : 0;
 		}
 
-		if (!is<T>()) {
-			std::cout << "Expected: " << typeid(T).name() << '\n';
-			std::cout << "Variant index: " << m_value.index() << '\n';
-			throw std::runtime_error("Invalid Value conversion");
-		}
-		//if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
+		if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
+		
 		return std::get<T>(m_value);
 	}
 

@@ -1,6 +1,9 @@
 #pragma once
 
+#include"../core/Core.h"
+
 #include"../module/Module.h"
+#include"../web/RouteMetadata.h"
 
 #include"SecurityConfiguration.h"
 #include"AuthenticationManager.h"
@@ -9,16 +12,18 @@
 
 class ServiceProvider;
 
-class SecurityModule : public Module {
+class MINISPRING_API SecurityModule : public Module {
 public:
 	SecurityConfiguration& configuration() { return m_configuration; }
 	AuthenticationManager& authenticationManager() { return *m_authManager; }
-	SessionManager& sessions() { return m_sessions; }
+	RouteMetadata protect(std::vector<std::string> authorities = {}) {
+		return RouteMetadata{ true, std::move(authorities) };
+	}
 
 	void build(ServiceProvider& services) override;
 
 private:
 	SecurityConfiguration m_configuration;
-	SessionManager m_sessions;
 	std::unique_ptr<AuthenticationManager> m_authManager;
+	std::unique_ptr<SessionManager> m_sessions;
 };

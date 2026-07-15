@@ -9,7 +9,7 @@ public:
 	void setAuthentication(Authentication auth) { m_authentication = std::move(auth); }
 
 private:
-	Authentication m_authentication; // default-constructed = unauthenticated
+	Authentication m_authentication;
 };
 
 class MINISPRING_API SecurityContextHolder {
@@ -20,7 +20,7 @@ public:
 	}
 
 	// MUST be called at the start of handling every request (see
-	// SessionAuthenticationFilter) -- worker threads are long-lived and
+	// SessionAuthenticationFilter). worker threads are long-lived and
 	// reused across many requests, so without this, request N+1 on the
 	// same worker thread would silently inherit request N's identity.
 	static void clearContext() {

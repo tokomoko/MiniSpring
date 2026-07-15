@@ -4,28 +4,32 @@
 
 #include<sstream>
 
-void Router::addRoute(const std::string& method,const std::string& path, Handler handler)
-{
-	m_routes.push_back({ handler, method, path });
+void Router::addRoute(const std::string& method, const std::string& path, Handler handler, RouteMetadata metadata) {
+	m_routes.push_back({ handler, method, path, std::move(metadata) });
+}
+
+const Router::Route* Router::findRoute(const std::string& method, const std::string& path, HttpRequest& request) {
+	for (auto& route : m_routes) {
+		if (route.method != method) continue;
+		if (!matchPath(route.path, path, request)) continue;
+		return &route;
+	}
+	return nullptr;
 }
 
 bool Router::handle(HttpRequest& request, HttpResponse& response) {
-	for (auto& route : m_routes) {
-		if (route.method != request.method()) continue;
-		if (!matchPath(route.path, request.path(), request)) continue;
+	const Route* route = findRoute(request.method(), request.path(), request);
+	if (!route) return false;
 
-		auto result = route.handler(request);
-		if (result.isOk()) response = result.value();
-		else {
-			auto& error = result.error();
-			response.status(error.status());
-			response.json(error.toJson());
-		}
-
-		return true;
+	auto result = route->handler(request);
+	if (result.isOk()) response = result.value();
+	else {
+		auto& error = result.error();
+		response.status(error.status());
+		response.json(error.toJson());
 	}
 
-	return false;
+	return true;
 }
 
 bool Router::matchPath(const std::string& pattern, const std::string& actual, HttpRequest& request) {

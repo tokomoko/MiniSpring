@@ -13,7 +13,8 @@ public:
 	HttpResponse();
 
 	void status(int code);
-	void setCookie(const std::string& name, const std::string& value, bool httpOnly = true, const std::string& sameSite = "Strict");
+	void setCookie(const std::string& name, const std::string& value, bool httpOnly = true, const std::string& sameSite = "Strict", int maxAgeSeconds = -1);
+	void clearCookie(const std::string& name);
 
 	void header(const std::string& name, const std::string& value);
 	void body(const std::string& content);

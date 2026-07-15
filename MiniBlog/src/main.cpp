@@ -3,12 +3,14 @@
 #include"models/Post.h"
 #include"models/PostCreateRequest.h"
 #include"models/PostUpdateRequest.h"
-
-#include"repositories/PostRepository.h"
-
-#include"services/PostService.h"
-
+#include"models/User.h"
+#include"models/LoginRequest.h"
 #include"controllers/PostController.h"
+#include"controllers/AuthController.h"
+#include"security/AppUserDetailsService.h"
+#include"security/AdminSeeder.h"
+
+#include<iostream>
 
 int main() {
 	try {
@@ -22,29 +24,40 @@ int main() {
 		auto& http = app.modules().add<HttpModule>();
 		http.configuration()
 			.port(8080)
-			.threads(4);
+			.threads(2)
+			.keepAlive(true);
 
 		http.staticFiles().directory(executableDirectory()/"resources/static");
+
+		auto& security = app.modules().add<SecurityModule>();
+		security.configuration()
+			.cookieName("SESSIONID");
 
 		app.services().get<EntityRegistry>()
 			.registerEntity<Post>()
 			.registerEntity<PostCreateRequest>()
-			.registerEntity<PostUpdateRequest>();
+			.registerEntity<PostUpdateRequest>()
+			.registerEntity<User>()
+			.registerEntity<LoginRequest>();
 
+		app.services().add<MarkdownRenderer>(std::make_unique<MarkdownRenderer>());
+		app.services().add<IPasswordEncoder>(std::make_unique<PBKDF2PasswordEncoder>());
+		app.services().add<IUserDetailsService>(std::make_unique<AppUserDetailsService>(app.services()));
 
 		app.configure();
 		app.build();
 
-		app.services().add<MarkdownRenderer>(std::make_unique<MarkdownRenderer>());
-
-		auto& entityManager = app.services().get<EntityManager>();
-		app.services().add<PostRepository>(std::make_unique<PostRepository>(entityManager));
-
-		auto& repository = app.services().get<PostRepository>();
-		app.services().add<PostService>(std::make_unique<PostService>(repository));
-
 		database.migrate();
+		AdminSeeder::seed(app.services());
+
+		auto repository = std::make_unique<PostRepository>(app.services().get<EntityManager>());
+		auto service = std::make_unique<PostService>(*repository);
+
+		app.services().add<PostRepository>(std::move(repository));
+		app.services().add<PostService>(std::move(service));
+
 		http.controllers().registerController<PostController>(app);
+		http.controllers().registerController<AuthController>(app);
 
 		app.listen();
 	}

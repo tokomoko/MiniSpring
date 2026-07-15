@@ -5,7 +5,7 @@
 #include<exception>
 #include<string>
 
-class MINISPRING_API DatabaseException : public std::exception {
+class DatabaseException : public std::exception {
 public:
 	explicit DatabaseException(std::string message, int errorCode = 0, std::string sql = "")
 		: m_rawMessage(message),

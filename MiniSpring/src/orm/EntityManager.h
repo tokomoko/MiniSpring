@@ -87,6 +87,25 @@ public:
 	}
 
 	template<typename T>
+	std::optional<T> findBy(const std::string& column, Value value) {
+		DatabaseGuard guard;
+
+		auto& descriptor = m_registry.get<T>();
+		std::string sql = "SELECT * FROM ";
+		sql += descriptor.table();
+		sql += " WHERE ";
+		sql += column;
+		sql += " = ? LIMIT 1;";
+
+		auto statement = m_database.prepare(sql);
+		statement->bind(0, value);
+		auto result = statement->execute();
+		if (result->rowCount() == 0) return std::nullopt;
+
+		return mapRow<T>(*result, 0);
+	}
+
+	template<typename T>
 	std::vector<T> findAll() {
 		DatabaseGuard guard;
 
