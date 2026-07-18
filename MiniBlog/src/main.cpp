@@ -5,8 +5,10 @@
 #include"models/PostUpdateRequest.h"
 #include"models/User.h"
 #include"models/LoginRequest.h"
+
 #include"controllers/PostController.h"
 #include"controllers/AuthController.h"
+
 #include"security/AppUserDetailsService.h"
 #include"security/AdminSeeder.h"
 
@@ -24,14 +26,15 @@ int main() {
 		auto& http = app.modules().add<HttpModule>();
 		http.configuration()
 			.port(8080)
-			.threads(2)
 			.keepAlive(true);
 
 		http.staticFiles().directory(executableDirectory()/"resources/static");
 
 		auto& security = app.modules().add<SecurityModule>();
 		security.configuration()
-			.cookieName("SESSIONID");
+			.cookieName("SESSIONID")
+			.frameOptions(FrameOptions::DENY)
+			.referrerPolicy(ReferrerPolicy::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
 
 		app.services().get<EntityRegistry>()
 			.registerEntity<Post>()
@@ -67,7 +70,11 @@ int main() {
 	catch (const HttpException& e) {
 		std::cerr << e.what() << std::endl;
 	}
+	catch (const std::filesystem::filesystem_error& e) {
+		std::cerr << e.what() << std::endl;
+	}
 	catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
+	catch (...) {}
 }

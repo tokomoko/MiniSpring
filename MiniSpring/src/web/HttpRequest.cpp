@@ -12,6 +12,12 @@ HttpRequest::HttpRequest(const std::string& raw, JsonMapper& mapper) : m_mapper(
 
 	first >> m_requestMethod >> m_requestPath;
 
+	size_t queryPos = m_requestPath.find('?');
+	if (queryPos != std::string::npos) {
+		m_queryString = m_requestPath.substr(queryPos + 1);
+		m_requestPath = m_requestPath.substr(0, queryPos);
+	}
+
 	while (getline(stream, line)) {
 		if (line == "\r")
 			break;

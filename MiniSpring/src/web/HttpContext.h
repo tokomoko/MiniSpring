@@ -18,13 +18,15 @@ public:
 	ControllerRegistry& controllers() { return m_controllers; }
 	MimeTypeRegistry& mimeTypes() { return m_mimeTypes; }
 	JsonMapper& jsonMapper() { return *m_mapper; }
-	FilterChain& filters() { return m_filterChain; }
+	PreFilterChain& preFilters() { return m_preFilterChain; }
+	PostFilterChain& postFilters() { return m_postFilterChain; }
 
 private:
 	Router m_router;
 	ControllerRegistry m_controllers;
 	MimeTypeRegistry m_mimeTypes;
-	FilterChain m_filterChain;
+	PreFilterChain m_preFilterChain;
+	PostFilterChain m_postFilterChain;
 	std::unique_ptr<JsonMapper> m_mapper;
 	std::unique_ptr<HttpServer> m_server;
 };

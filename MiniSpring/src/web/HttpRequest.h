@@ -21,6 +21,7 @@ public:
 
 	void setPathParameter(const std::string& name, const std::string& value);
 	std::string pathParameter(const std::string& name) const;
+	const std::string& queryString() const { return m_queryString; }
 
 	std::string header(const std::string& name) {
 		return m_headers.get(name);
@@ -46,6 +47,7 @@ private:
 	std::string m_requestMethod;
 	std::string m_requestPath;
 	std::string m_body;
+	std::string m_queryString;
 
 	std::unordered_map<std::string, std::string > m_pathParameters;
 

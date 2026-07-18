@@ -4,8 +4,8 @@
 
 #include<sstream>
 
-void Router::addRoute(const std::string& method, const std::string& path, Handler handler, RouteMetadata metadata) {
-	m_routes.push_back({ handler, method, path, std::move(metadata) });
+void Router::addRoute(const std::string& method, const std::string& path, Handler handler, std::shared_ptr<FilterChain> filters) {
+	m_routes.push_back({ handler, filters, method, path });
 }
 
 const Router::Route* Router::findRoute(const std::string& method, const std::string& path, HttpRequest& request) {
@@ -21,7 +21,13 @@ bool Router::handle(HttpRequest& request, HttpResponse& response) {
 	const Route* route = findRoute(request.method(), request.path(), request);
 	if (!route) return false;
 
+	if (route->filters) {
+		if (!route->filters->run(request, response))
+			return true;
+	}
+
 	auto result = route->handler(request);
+
 	if (result.isOk()) response = result.value();
 	else {
 		auto& error = result.error();

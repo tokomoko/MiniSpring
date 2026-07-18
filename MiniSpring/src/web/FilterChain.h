@@ -24,9 +24,13 @@ public:
 		for (std::unique_ptr<IFilter>& filter : m_filters)
 			if (!filter->doFilter(request, response))
 				return false;
+
 		return true;
 	}
 
 private:
 	std::vector<std::unique_ptr<IFilter>> m_filters;
 };
+
+class MINISPRING_API PreFilterChain : public FilterChain {};
+class MINISPRING_API PostFilterChain : public FilterChain {};

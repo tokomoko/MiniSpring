@@ -3,12 +3,14 @@
 #include"../core/Core.h"
 
 #include"../module/Module.h"
-#include"../web/RouteMetadata.h"
+#include"../web/FilterChain.h"
 
 #include"SecurityConfiguration.h"
 #include"AuthenticationManager.h"
 #include"SessionManager.h"
 #include"DaoAuthenticationProvider.h"
+
+#include<initializer_list>
 
 class ServiceProvider;
 
@@ -16,9 +18,9 @@ class MINISPRING_API SecurityModule : public Module {
 public:
 	SecurityConfiguration& configuration() { return m_configuration; }
 	AuthenticationManager& authenticationManager() { return *m_authManager; }
-	RouteMetadata protect(std::vector<std::string> authorities = {}) {
-		return RouteMetadata{ true, std::move(authorities) };
-	}
+	std::shared_ptr<FilterChain> protect(std::vector<std::string> roles = {});
+
+	std::shared_ptr<IFilter> authorize(std::initializer_list<std::string> roles);
 
 	void build(ServiceProvider& services) override;
 

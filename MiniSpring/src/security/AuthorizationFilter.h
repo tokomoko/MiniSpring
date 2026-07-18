@@ -9,17 +9,13 @@
 #include"SecurityContext.h"
 
 #include<algorithm>
+#include<functional>
 
 class AuthorizationFilter : public IFilter {
 public:
-	explicit AuthorizationFilter(Router& router) : m_router(router) {}
+	AuthorizationFilter(std::vector<std::string> authorities) : m_authorities(std::move(authorities)) {}
 
 	bool doFilter(HttpRequest& request, HttpResponse& response) override {
-		const Router::Route* route = m_router.findRoute(request.method(), request.path(), request);
-
-		if (!route || !route->metadata.requiresAuth)
-			return true;
-
 		auto& auth = SecurityContextHolder::getContext().authentication();
 
 		if (!auth.isAuthenticated()) {
@@ -28,23 +24,19 @@ public:
 			return false;
 		}
 
-		auto& required = route->metadata.requiredAuthorities;
-		if (!required.empty()) {
-			bool hasAny = std::any_of(auth.authorities().begin(), auth.authorities().end(),
-				[&](const std::string& a) {
-				return std::find(required.begin(), required.end(), a) != required.end();
-			});
+		bool allowed = m_authorities.empty() || std::any_of(auth.authorities().begin(), auth.authorities().end(), [&](const auto& a) {
+			return std::find(m_authorities.begin(), m_authorities.end(), a) != m_authorities.end();
+		});
 
-			if (!hasAny) {
-				response.status(403);
-				response.json(HttpError(403, "Insufficient permissions").toJson());
-				return false;
-			}
+		if (!allowed) {
+			response.status(403);
+			response.json(HttpError(403, "Insufficient permissions").toJson());
+			return false;
 		}
 
 		return true;
 	}
 
 private:
-	Router& m_router;
+	std::vector<std::string> m_authorities;
 };

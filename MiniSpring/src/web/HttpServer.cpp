@@ -74,8 +74,10 @@ void HttpServer::acceptLoop() {
 
 void HttpServer::workerLoop() {
 	SOCKET client;
-	while (m_queue.pop(client))
+	while (m_queue.pop(client)) {
 		handleClient(client);
+
+	}
 }
 
 bool HttpServer::shouldKeepAlive(HttpRequest& request) {
@@ -101,7 +103,30 @@ void HttpServer::handleClient(SOCKET client) {
 		HttpRequest request(raw, m_mapper);
 		HttpResponse response;
 
-		bool found = m_reqHandler->handle(request, response);
+		bool found;
+		try {
+			found = m_reqHandler->handle(request, response);
+		}
+		catch (const HttpException& e) {
+			response = HttpResponse();
+			response.status(e.status());
+			response.body(e.what());
+			found = true;
+		}
+		catch (const std::exception& e) {
+			std::cerr << "[ERROR] Unhandled exception while handling request: " << e.what() << std::endl;
+			response = HttpResponse();
+			response.status(500);
+			response.body("Internal Server Error");
+			found = true;
+		}
+		catch (...) {
+			std::cerr << "[ERROR] Unknown unhandled exception while handling request" << std::endl;
+			response = HttpResponse();
+			response.status(500);
+			response.body("Internal Server Error");
+			found = true;
+		}
 
 		if (!found) {
 			response.status(404);

@@ -9,7 +9,7 @@
 #include"HttpRequest.h"
 #include"HttpResponse.h"
 #include"HttpError.h"
-#include"RouteMetadata.h"
+#include"FilterChain.h"
 
 #include"Result.h"
 
@@ -19,12 +19,12 @@ public:
 
 	struct Route {
 		Handler handler;
+		std::shared_ptr<FilterChain> filters;
 		std::string method;
 		std::string path;
-		RouteMetadata metadata;
 	};
 
-	void addRoute(const std::string& method, const std::string& path, Handler handler, RouteMetadata metadata = {});
+	void addRoute(const std::string& method, const std::string& path, Handler handler, std::shared_ptr<FilterChain> filters = nullptr);
 	bool handle(HttpRequest& request, HttpResponse& response);
 
 	const Route* findRoute(const std::string& method, const std::string& path, HttpRequest& request);

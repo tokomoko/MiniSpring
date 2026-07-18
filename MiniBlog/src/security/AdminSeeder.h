@@ -29,7 +29,7 @@ public:
 		auto& encoder = services.get<IPasswordEncoder>();
 
 		if (!manager.findAll<User>().empty())
-			return; // already have at least one user; never overwrite
+			return;
 
 		auto username = readEnv("MINIBLOG_ADMIN_USERNAME");
 		auto password = readEnv("MINIBLOG_ADMIN_PASSWORD");

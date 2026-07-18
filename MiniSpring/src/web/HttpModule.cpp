@@ -14,7 +14,8 @@ void HttpModule::build(ServiceProvider& services) {
 	services.addRef<ControllerRegistry>(m_ctx.controllers());
 	services.addRef<MimeTypeRegistry>(m_ctx.mimeTypes());
 	services.addRef<JsonMapper>(*m_ctx.m_mapper);
-	services.addRef<FilterChain>(m_ctx.filters());
+	services.addRef<PreFilterChain>(m_ctx.preFilters());
+	services.addRef<PostFilterChain>(m_ctx.postFilters());
 }
 void HttpModule::start(ServiceProvider& services) {
 	m_ctx.controllers().initialize(m_ctx.router());
@@ -29,40 +30,56 @@ void HttpModule::stop(ServiceProvider& services) {
 }
 
 bool HttpModule::handle(HttpRequest& request, HttpResponse& response) {
-	if (!m_ctx.filters().run(request, response))
-		return true;
+	bool handled;
+	if (!m_ctx.preFilters().run(request, response)) {
+		handled = true;
+	}
+	else if (m_ctx.router().handle(request, response)) {
+		handled = true;
+	}
+	else {
+		handled = serveStaticFile(request, response);
+	}
 
-	if (m_ctx.router().handle(request, response))
-		return true;
-
-	return serveStaticFile(request, response);
+	m_ctx.postFilters().run(request, response);
+	return handled;
 }
 
 bool HttpModule::serveStaticFile(HttpRequest& request, HttpResponse& response) {
 	if (m_staticFiles.directory().empty())
 		return false;
 
-	std::string requestPath = request.path();
+	std::string requestPath = request.path(); // already query-free now
+
 	if (!requestPath.empty() && requestPath.front() == '/')
 		requestPath.erase(requestPath.begin());
 
 	if (requestPath.empty())
 		requestPath = "index.html";
 
-	auto root = std::filesystem::weakly_canonical(m_staticFiles.directory());
-	auto full = std::filesystem::weakly_canonical(root / requestPath);
-
-	auto[rootEnd, fullBegin] = std::mismatch(root.begin(), root.end(), full.begin());
-	if (rootEnd != root.end())
+	static const std::string invalidChars = "<>:\"|?*";
+	if (requestPath.find_first_of(invalidChars) != std::string::npos)
 		return false;
 
-	std::ifstream file(full, std::ios::binary);
-	if (!file) return false;
+	try {
+		auto root = std::filesystem::weakly_canonical(m_staticFiles.directory());
+		auto full = std::filesystem::weakly_canonical(root / requestPath);
 
-	std::ostringstream contents;
-	contents << file.rdbuf();
+		auto[rootEnd, fullBegin] = std::mismatch(root.begin(), root.end(), full.begin());
+		if (rootEnd != root.end())
+			return false;
 
-	response.header("Content-Type", m_ctx.mimeTypes().get(full.extension().string()));
-	response.body(contents.str());
-	return true;
+		std::ifstream file(full, std::ios::binary);
+		if (!file) return false;
+
+		std::ostringstream contents;
+		contents << file.rdbuf();
+
+		response.header("Content-Type", m_ctx.mimeTypes().get(full.extension().string()));
+		response.body(contents.str());
+		return true;
+	}
+	catch (const std::filesystem::filesystem_error&) {
+		return false;
+	}
 }
