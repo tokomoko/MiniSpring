@@ -32,7 +32,7 @@ public:
 
 		router.addRoute("GET", "/login", [this](HttpRequest& req) {
 			HttpResponse res;
-			std::string html = readFile((executableDirectory() / "resources/static/login.html").string());
+			std::string html = readFile("resources/static/login.html");
 			res.html(html);
 			return Result<HttpResponse, HttpError>::success(res);
 		});
@@ -56,7 +56,7 @@ public:
 			res.json(JsonValue(body));
 
 			return Result<HttpResponse, HttpError>::success(res);
-		}, m_security.protect()); // must be logged in
+		}, m_security.protect());
 	}
 
 private:

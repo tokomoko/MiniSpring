@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign in — Field Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="page login-page">
+    <header class="page-header">
+        <div class="brand">
+            <span class="brand-mark">&#9642;</span>
+            <h1>Field Notes</h1>
+        </div>
+    </header>
+
+    <div class="login-shell">
+        <form id="loginForm" class="composer login-form">
+            <h2 class="panel-label">Sign in</h2>
+
+            <input id="username" placeholder="Username" autocomplete="username" required>
+            <input id="password" type="password" placeholder="Password" autocomplete="current-password" required>
+
+            <div id="error" class="login-error"></div>
+
+            <div class="composer-actions">
+                <button type="submit" id="submitBtn">Sign in</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Field Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="page">
+    <header class="page-header">
+        <div class="brand">
+            <span class="brand-mark">&#9642;</span>
+            <h1>Field Notes</h1>
+        </div>
+        <div class="header-actions">
+            <button id="new-entry-toggle" class="new-entry-btn hidden">
+                + New entry
+            </button>
+            <div id="auth-slot" class="auth-slot"></div>
+        </div>
+    </header>
+    <section id="composer" class="composer hidden">
+        <input id="title" placeholder="Entry title">
+        <textarea id="content" placeholder="Write the entry..." rows="6"></textarea>
+        <div class="composer-actions">
+            <button id="publish-button">Publish entry</button>
+            <button id="cancel-button" class="hidden">Cancel</button>
+        </div>
+    </section>
+    <div class="layout">
+        <aside class="index">
+            <h2 class="panel-label">
+                Index <span class="panel-sub">A&ndash;Z</span>
+            </h2>
+            <ul id="index-list" class="index-list"></ul>
+        </aside>
+        <main class="log">
+            <h2 class="panel-label">
+                Log <span class="panel-sub">newest first</span>
+            </h2>
+            <ul id="log-list" class="log-list"></ul>
+        </main>
+    </div>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

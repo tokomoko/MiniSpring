@@ -23,7 +23,7 @@ public:
 	void registerRoutes(Router& router) override {
 		router.addRoute("GET", "/posts/{id}", [this](HttpRequest& req) {
 			HttpResponse res;
-			std::string html = readFile((executableDirectory() / "resources/static/post.html").string());
+			std::string html = readFile("resources/static/post.html");
 			res.html(html);
 			return Result<HttpResponse, HttpError>::success(res);
 		});

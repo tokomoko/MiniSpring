@@ -20,15 +20,16 @@ int main() {
 
 		auto& database = app.modules().add<DatabaseModule>();
 		database.configuration()
-			.file(executableDirectory()/"blog.db")
-			.migrations(executableDirectory()/"resources/migrations");
+			.file("blog.db")
+			.migrations("resources/migrations");
 
 		auto& http = app.modules().add<HttpModule>();
 		http.configuration()
 			.port(8080)
+			.threads(6)
 			.keepAlive(true);
 
-		http.staticFiles().directory(executableDirectory()/"resources/static");
+		http.staticFiles().directory("resources/static");
 
 		auto& security = app.modules().add<SecurityModule>();
 		security.configuration()
