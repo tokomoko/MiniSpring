@@ -76,7 +76,6 @@ void HttpServer::workerLoop() {
 	SOCKET client;
 	while (m_queue.pop(client)) {
 		handleClient(client);
-
 	}
 }
 

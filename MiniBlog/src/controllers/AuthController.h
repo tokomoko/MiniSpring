@@ -4,6 +4,8 @@
 
 #include<MiniSpring.h>
 
+#include<algorithm>
+
 class AuthController : public Controller {
 public:
 	AuthController(MiniSpringApp& app)
@@ -49,13 +51,19 @@ public:
 
 		router.addRoute("GET", "/api/me", [this](HttpRequest& req) {
 			HttpResponse res;
+
 			auto& auth = SecurityContextHolder::getContext().authentication();
+
+			bool isAdmin = std::find(auth.authorities().begin(), auth.authorities().end(), "ADMIN") != auth.authorities().end();
 
 			JsonObject body;
 			body["username"] = auth.principal();
+			body["admin"] = isAdmin;
+
 			res.json(JsonValue(body));
 
 			return Result<HttpResponse, HttpError>::success(res);
+
 		}, m_security.protect());
 	}
 
