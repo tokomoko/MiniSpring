@@ -67,16 +67,23 @@ std::vector<Migration> MigrationManager::loadMigrations() {
 			migrations.push_back(parseMigrationFile(entry.path()));
 	}
 
-	for (size_t i = 1; i < migrations.size(); i++) {
-		if (migrations[i].version != migrations[i - 1].version + 1) {
-			throw std::runtime_error("Migration version gap between " + std::to_string(migrations[i - 1].version) + " and " + std::to_string(migrations[i].version));
-		}
-	}
+	//for (size_t i = 1; i < migrations.size(); i++) {
+	//	if (migrations[i].version != migrations[i - 1].version + 1) {
+	//		throw std::runtime_error("Migration version gap between " + std::to_string(migrations[i - 1].version) + " and " + std::to_string(migrations[i].version));
+	//	}
+	//}
 
 
 	std::sort(migrations.begin(), migrations.end(), [](const Migration& a, const Migration& b) {
 		return a.version < b.version;
 	});
+
+    for (size_t i = 1; i < migrations.size(); i++) {
+        if (migrations[i].version == migrations[i - 1].version)
+            throw std::runtime_error("Duplicate migration version " + std::to_string(migrations[i].version) + ": " + migrations[i - 1].name + " and " + migrations[i].name);
+        if (migrations[i].version != migrations[i - 1].version + 1)
+             throw std::runtime_error("Migration version gap between " + std::to_string(migrations[i - 1].version) + " and " + std::to_string(migrations[i].version));
+    }
 
 	return migrations;
 }
@@ -101,7 +108,7 @@ void MigrationManager::apply(const Migration& migration) {
 	m_database.beginTransaction();
 
 	try {
-		m_database.execute(migration.sql);
+        m_database.executeScript(migration.sql);
 
 		auto statement = m_database.prepare("INSERT INTO schema_version(version,name,checksum) VALUES(?,?,?)");
 		statement->bind(0, migration.version);

@@ -14,6 +14,7 @@ public:
 	void disconnect() override;
 
 	std::unique_ptr<QueryResult> execute(const std::string& sql) override;
+    void executeScript(const std::string& sql) override;
 	std::unique_ptr<PreparedStatement> prepare(const std::string& sql) override;
 
 	void beginTransaction() override;

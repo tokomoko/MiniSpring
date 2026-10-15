@@ -15,7 +15,7 @@ class MINISPRING_API EntityManager {
 public:
 	EntityManager(Database& database, EntityRegistry& registry) : m_database(database), m_registry(registry) {}
 
-	template<typename T>
+	template<typename T>    
 	void persist(T& entity) {
 		DatabaseGuard guard; // executeUpdate() + lastInsertId() must be atomic as a pair
 
@@ -122,6 +122,27 @@ public:
 
 		return entities;
 	}
+
+    template<typename T>
+    std::vector<T> findAllBy(const std::string& column, Value value) {
+        DatabaseGuard guard;
+
+        auto& descriptor = m_registry.get<T>();
+        std::string sql = "SELECT * FROM ";
+        sql += descriptor.table();
+        sql += " WHERE ";
+        sql += column;
+        sql += " = ?;";
+
+        auto statement = m_database.prepare(sql);
+        statement->bind(0, value);
+        auto result = statement->execute();
+
+        std::vector<T> entities;
+        for (int i = 0; i < result->rowCount(); i++)
+            entities.push_back(mapRow<T>(*result, i));
+        return entities;
+    }
 
 	template<typename T>
 	void update(const T& entity) {
@@ -236,6 +257,20 @@ public:
 		if (exists<T>(id)) update(entity);
 		else persist(entity);
 	}
+
+    template<typename F>
+    void transaction(F&& work) {
+        DatabaseGuard guard;
+        m_database.beginTransaction();
+        try {
+            work();
+            m_database.commit();
+        }
+        catch (...) {
+            m_database.rollback();
+            throw;
+        }
+    }
 
 private:
 	template<typename T>

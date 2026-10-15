@@ -67,6 +67,24 @@ std::unique_ptr<QueryResult> SQLiteDatabase::execute(const std::string& sql) {
 	return std::make_unique<SQLiteQueryResult>(std::move(rows), std::move(columnNames));
 }
 
+void SQLiteDatabase::executeScript(const std::string& sql) {
+    if (!m_database)     {
+        throw DatabaseException("executeScript() called before connect() (or after disconnect())", 0, sql);
+    }
+
+    char* errorMessage = nullptr;
+
+    int result = sqlite3_exec(m_database, sql.c_str(), nullptr, nullptr, &errorMessage);
+    if (result != SQLITE_OK) {
+        std::string message = errorMessage ? errorMessage : sqlite3_errmsg(m_database);
+        int code = sqlite3_extended_errcode(m_database);
+        sqlite3_free(errorMessage);
+        throw DatabaseException(message, code, sql);
+    }
+
+    sqlite3_free(errorMessage);
+}
+
 void SQLiteDatabase::beginTransaction() {
 	execute("BEGIN TRANSACTION");
 }

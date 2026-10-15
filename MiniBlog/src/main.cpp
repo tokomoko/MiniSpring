@@ -26,7 +26,7 @@ int main() {
 		auto& http = app.modules().add<HttpModule>();
 		http.configuration()
 			.port(8080)
-			.threads(6)
+			.threads(1)
 			.keepAlive(true);
 
 		http.staticFiles().directory("resources/static");
