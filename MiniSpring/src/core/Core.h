@@ -1,9 +1,13 @@
 #pragma once
 
-#ifdef MINISPRING_BUILD_DLL
-#define MINISPRING_API __declspec(dllexport)
-#elif MINISPRING_BUILD_STATIC
-#define MINISPRING_API
+#if defined(MINISPRING_STATIC)
+    #define MINISPRING_API
+#elif defined(_WIN32)
+    #ifdef MINISPRING_EXPORTS
+        #define MINISPRING_API __declspec(dllexport)
+    #else
+        #define MINISPRING_API __declspec(dllimport)
+    #endif
 #else
-#define MINISPRING_API __declspec(dllimport)
+    #define MINISPRING_API __attribute__((visibility("default")))
 #endif

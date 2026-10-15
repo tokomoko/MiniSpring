@@ -1,0 +1,3 @@
+[submodule "vendor/SQLite"]
+	path = MiniSpring/vendor/SQLite
+	url = https://github.com/azadkuh/sqlite-amalgamation
