@@ -41,7 +41,8 @@ private:
 	JsonMapper m_mapper;
 	RequestQueue m_queue;
 
-	std::vector<std::thread> m_workers;
+    std::vector<std::thread> m_workers;
+    std::thread m_acceptThread;
 	std::atomic<bool> m_running = false;
 
 	const ServerConfiguration& m_config;

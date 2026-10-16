@@ -7,6 +7,50 @@ HttpResponse::HttpResponse() {
 	m_statusMessage = "OK";
 }
 
+HttpResponse HttpResponse::parse(const std::string& raw) {
+    HttpResponse res;
+
+    size_t headerEnd = raw.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        res.status(500);
+        res.body("Invalid HTTP Response");
+        return res;
+    }
+
+    std::string headerBlock = raw.substr(0, headerEnd);
+    res.m_responseBody = raw.substr(headerEnd + 4);
+
+    std::stringstream stream(headerBlock);
+    std::string statusLine;
+    if (std::getline(stream, statusLine)) {
+        std::stringstream lineStream(statusLine);
+        std::string httpVer;
+        int code = 200;
+        lineStream >> httpVer >> code;
+        res.status(code);
+    }
+
+    std::string line;
+    while (std::getline(stream, line)) {
+        if (line == "\r" || line.empty()) continue;
+
+        size_t colon = line.find(':');
+        if (colon != std::string::npos) {
+            std::string name = line.substr(0, colon);
+            size_t valueStart = colon + 1;
+            while (valueStart < line.size() && line[valueStart] == ' ') valueStart++;
+            std::string value = line.substr(valueStart);
+
+            if (!value.empty() && value.back() == '\r')
+                value.pop_back();
+
+            res.header(name, value);
+        }
+    }
+
+    return res;
+}
+
 void HttpResponse::status(int code) {
 	m_statusCode = code;
 	m_statusMessage = statusText(code);

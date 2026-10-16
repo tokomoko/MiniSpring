@@ -5,6 +5,7 @@
 #include"EntityDescriptorBase.h"
 #include"EntityDescriptor.h"
 
+#include<string>
 #include<unordered_map>
 #include<typeindex>
 
@@ -31,13 +32,18 @@ public:
 		return registerEntity(T::descriptor());
 	}
 
-	template<typename T>
-	EntityDescriptor<T>& get() {
-		auto it = m_entities.find(typeid(T));
-		if (it == m_entities.end()) throw std::runtime_error("Entity not registered");
+    template<typename T>
+    EntityDescriptor<T>& get() {
+        auto typeKey = std::type_index(typeid(T));
+        auto it = m_entities.find(typeKey);
 
-		return *static_cast<EntityDescriptor<T>*>(it->second.get());
-	}
+        if (it == m_entities.end()) {
+            throw std::runtime_error(std::string("Entity not registered in EntityRegistry: ") + typeid(T).name());
+        }
+
+        return *static_cast<EntityDescriptor<T>*>(it->second.get());
+    }
+
 
 private:
 	std::unordered_map<std::type_index, std::unique_ptr<EntityDescriptorBase>> m_entities;

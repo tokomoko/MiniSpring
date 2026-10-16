@@ -13,6 +13,7 @@
 
 #include"web/Router.h"
 #include"web/HttpServer.h"
+#include"web/HttpClient.h"
 #include"web/Controller.h"
 #include"web/MimeTypeRegistry.h"
 #include"web/HttpError.h"

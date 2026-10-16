@@ -17,14 +17,17 @@ public:
 		m_services[typeid(T)] = std::shared_ptr<T>(&service, [](T*) {});
 	}
 
-	template<typename T>
-	T& get() {
-		auto it = m_services.find(typeid(T));
-		if (it == m_services.end())
-			throw std::runtime_error("Service not registered.");
+    template<typename T>
+    T& get() {
+        auto typeKey = std::type_index(typeid(T));
+        auto it = m_services.find(typeKey);
 
-		return *static_cast<T*>(it->second.get());
-	}
+        if (it == m_services.end()) {
+            throw std::runtime_error("Service not found in ServiceProvider: " + std::string(typeid(T).name()));
+        }
+
+        return *static_cast<T*>(it->second.get());
+    }
 
 private:
 	std::unordered_map<std::type_index, std::shared_ptr<void>> m_services;

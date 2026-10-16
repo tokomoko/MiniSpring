@@ -26,36 +26,40 @@ HttpServer::~HttpServer() {
 }
 
 void HttpServer::listen(int port) {
-	sockaddr_in address{};
-	address.sin_family = AF_INET;
-	address.sin_port = htons(port);
-	address.sin_addr.s_addr = INADDR_ANY;
+    sockaddr_in address{};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    address.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(m_serverSocket, (sockaddr*)&address, sizeof(address)) == SOCKET_ERROR)
-		throw std::runtime_error("Bind failed");
+    if (bind(m_serverSocket, (sockaddr*)&address, sizeof(address)) == SOCKET_ERROR)
+        throw std::runtime_error("Bind failed");
 
-	::listen(m_serverSocket, SOMAXCONN);
+    ::listen(m_serverSocket, SOMAXCONN);
 
-	m_running = true;
+    m_running = true;
 
-	m_workers.reserve(m_config.threads());
-	for (int i = 0; i < m_config.threads(); i++)
-		m_workers.emplace_back(&HttpServer::workerLoop, this);
+    m_workers.reserve(m_config.threads());
+    for (int i = 0; i < m_config.threads(); i++)
+        m_workers.emplace_back(&HttpServer::workerLoop, this);
 
-	acceptLoop();
+    m_acceptThread = std::thread(&HttpServer::acceptLoop, this);
 }
 
 void HttpServer::stop() {
-	if (!m_running.exchange(false))
-		return;
+    if (!m_running.exchange(false))
+        return;
 
-	closesocket(m_serverSocket);
-	m_queue.shutdown();
+    closesocket(m_serverSocket);
+    m_queue.shutdown();
 
-	for (auto& worker : m_workers)
-		if (worker.joinable()) worker.join();
+    if (m_acceptThread.joinable()) {
+        m_acceptThread.join();
+    }
 
-	m_workers.clear();
+    for (auto& worker : m_workers)
+        if (worker.joinable()) worker.join();
+
+    m_workers.clear();
 }
 
 void HttpServer::acceptLoop() {
