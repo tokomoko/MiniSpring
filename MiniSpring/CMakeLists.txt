@@ -22,21 +22,26 @@ target_compile_options(minispring_sqlite3 PRIVATE
 find_package(Threads REQUIRED)
 target_link_libraries(minispring_sqlite3 PUBLIC Threads::Threads)
 
-file(GLOB_RECURSE MINISPRING_SOURCES CONFIGURE_DEPENDS
+file(GLOB_RECURSE MINISPRING_SOURCES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-file(GLOB_RECURSE MINISPRING_HEADERS CONFIGURE_DEPENDS
+file(GLOB_RECURSE MINISPRING_HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 # vendored code is not ours
-list(FILTER MINISPRING_SOURCES EXCLUDE REGEX "/vendor/")
-list(FILTER MINISPRING_HEADERS EXCLUDE REGEX "/vendor/")
+list(FILTER MINISPRING_SOURCES EXCLUDE REGEX "^vendor/")
+list(FILTER MINISPRING_HEADERS EXCLUDE REGEX "^vendor/")
+
+if(NOT MINISPRING_SOURCES)
+    message(FATAL_ERROR "MiniSpring: no .cpp files found under ${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
 
 add_library(MiniSpring STATIC ${MINISPRING_SOURCES} ${MINISPRING_HEADERS})
 add_library(MiniSpring::MiniSpring ALIAS MiniSpring)
 
 target_include_directories(MiniSpring PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)   # apps write #include <MiniSpring.h>
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>) 
 
 target_compile_features(MiniSpring PUBLIC cxx_std_17)
 
