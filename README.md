@@ -15,6 +15,21 @@ The project explores how the core concepts of modern backend frameworks can be i
 - **JSON** — JSON parsing, serialization, and object mapping.
 - **Security** — Authentication and authorization infrastructure, including route-level access protection.
 
+## Getting Started
+
+### Clone the repository
+
+Clone the repository recursively to initialize and download its submodules, including the SQLite dependency.
+
+```bash
+git clone --recursive https://github.com/tokomoko/MiniSpring.git
+```
+
+##Build with Visual Studio
+- Make sure Visual Studio is installed with the Desktop development with C++ workload.
+- Open the cloned repository in Visual Studio.
+- Build the solution.
+
 ## Example
 
 ### Application Configuration
