@@ -25,7 +25,7 @@ Clone the repository recursively to initialize and download its submodules, incl
 git clone --recursive https://github.com/tokomoko/MiniSpring.git
 ```
 
-## Build with Visual Studio
+Build with Visual Studio
 - Make sure Visual Studio is installed with the Desktop development with C++ workload.
 - Open the cloned repository in Visual Studio.
 - Build the solution.
