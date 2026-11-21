@@ -1,30 +1,25 @@
 #pragma once
 
-#include"Database.h"
-#include"../orm/EntityManager.h"
-#include"migration_manager/MigrationManager.h"
+#include "../orm/EntityManager.h"
+#include "Database.h"
+#include "migration_manager/MigrationManager.h"
 
-#include<memory>
+#include <memory>
 
 class DatabaseModule;
 
 class DatabaseContext {
-	friend class DatabaseModule;
-public:
-	Database& database() {
-		return *m_database;
-	}
+  friend class DatabaseModule;
 
-	EntityManager& entityManager() {
-		return *m_entityManager;
-	}
+ public:
+  Database &database() { return *m_database; }
 
-	MigrationManager& migrationManager() {
-		return *m_migrationManager;
-	}
+  EntityManager &entityManager() { return *m_entityManager; }
 
-private:
-	std::unique_ptr<Database> m_database;
-	std::unique_ptr<EntityManager> m_entityManager;
-	std::unique_ptr<MigrationManager> m_migrationManager;
+  MigrationManager &migrationManager() { return *m_migrationManager; }
+
+ private:
+  std::unique_ptr<Database> m_database;
+  std::unique_ptr<EntityManager> m_entityManager;
+  std::unique_ptr<MigrationManager> m_migrationManager;
 };

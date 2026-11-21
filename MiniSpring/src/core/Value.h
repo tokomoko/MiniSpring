@@ -1,82 +1,66 @@
 #pragma once
 
-#include"Core.h"
+#include "Core.h"
 
-#include<variant>
-#include<string>
-#include<stdexcept>
-#include<iostream>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <variant>
 
 class MINISPRING_API Value {
-	using Type = std::variant<std::nullptr_t, bool, int, double, std::string>;
-public:
-	Value();
-	Value(std::nullptr_t value);
-	Value(bool value);
-	Value(int value);
-	Value(double value);
-	Value(const char* value);
-	Value(std::string value);
+  using Type = std::variant<std::nullptr_t, bool, int, double, std::string>;
 
-	std::string escape(const std::string& s) const;
+ public:
+  Value();
+  Value(std::nullptr_t value);
+  Value(bool value);
+  Value(int value);
+  Value(double value);
+  Value(const char *value);
+  Value(std::string value);
 
-	const Type& data() const {
-		return m_value;
-	}
+  std::string escape(const std::string &s) const;
 
-	Type& data() {
-		return m_value;
-	}
+  const Type &data() const { return m_value; }
 
-	template<typename T>
-	T get() const {
-		
-		if constexpr (std::is_same_v<T, bool>) {
-			if (is<int>()) return std::get<int>(m_value) != 0;
-		}
+  Type &data() { return m_value; }
 
-		if constexpr (std::is_same_v<T, int>) {
-			if (is<bool>()) return std::get<bool>(m_value) ? 1 : 0;
-		}
+  template <typename T>
+  T get() const {
+    if constexpr (std::is_same_v<T, bool>) {
+      if (is<int>()) return std::get<int>(m_value) != 0;
+    }
 
-		if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
-		
-		return std::get<T>(m_value);
-	}
+    if constexpr (std::is_same_v<T, int>) {
+      if (is<bool>()) return std::get<bool>(m_value) ? 1 : 0;
+    }
 
-	template<typename T>
-	bool is() const {
-		return std::holds_alternative<T>(m_value);
-	}
+    if (!is<T>()) throw std::runtime_error("Invalid Value conversion");
 
-	bool isNull() const {
-		return is<std::nullptr_t>();
-	}
+    return std::get<T>(m_value);
+  }
 
-	bool isBoolean() const {
-		return is<bool>();
-	}
+  template <typename T>
+  bool is() const {
+    return std::holds_alternative<T>(m_value);
+  }
 
-	bool isInteger() const {
-		return is<int>();
-	}
+  bool isNull() const { return is<std::nullptr_t>(); }
 
-	bool isDouble() const {
-		return is<double>();
-	}
+  bool isBoolean() const { return is<bool>(); }
 
-	bool isNumber() const {
-		return is<int>() || is<double>();
-	}
+  bool isInteger() const { return is<int>(); }
 
-	bool isString() const {
-		return is<std::string>();
-	}
+  bool isDouble() const { return is<double>(); }
 
-	std::string toString() const;
-	std::string toJsonString() const;
-	std::string typeName() const;
+  bool isNumber() const { return is<int>() || is<double>(); }
 
-private:
-	Type m_value;
+  bool isString() const { return is<std::string>(); }
+
+  std::string toString() const;
+  std::string toJsonString() const;
+  std::string typeName() const;
+
+ private:
+  Type m_value;
 };

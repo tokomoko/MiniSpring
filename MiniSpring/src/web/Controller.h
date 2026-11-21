@@ -1,11 +1,11 @@
 #pragma once
 
-#include"../core/Core.h"
+#include "../core/Core.h"
 
-#include"Router.h"
+#include "Router.h"
 
 class MINISPRING_API Controller {
-public:
-	virtual void registerRoutes(Router& router) = 0;
-	virtual ~Controller() {}
+ public:
+  virtual void registerRoutes(Router &router) = 0;
+  virtual ~Controller() {}
 };

@@ -1,12 +1,12 @@
 #pragma once
 
-#include"../core/Core.h"
+#include "../core/Core.h"
 
-#include"../reflection/FieldBase.h"
+#include "../reflection/FieldBase.h"
 
 class MINISPRING_API EntityDescriptorBase {
-public:
-	virtual ~EntityDescriptorBase() = default;
+ public:
+  virtual ~EntityDescriptorBase() = default;
 
-	virtual FieldBase& primaryKey() = 0;
+  virtual FieldBase &primaryKey() = 0;
 };

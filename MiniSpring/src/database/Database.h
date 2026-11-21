@@ -1,27 +1,28 @@
 #pragma once
 
-#include"../core/Core.h"
+#include "../core/Core.h"
 
 #include <memory>
 #include <string>
 
-#include"QueryResult.h"
-#include"PreparedStatement.h"
+#include "PreparedStatement.h"
+#include "QueryResult.h"
 
 class MINISPRING_API Database {
-public:
-	virtual ~Database() = default;
+ public:
+  virtual ~Database() = default;
 
-	virtual void connect(const std::string& connectionString) = 0;
-	virtual void disconnect() = 0;
+  virtual void connect(const std::string &connectionString) = 0;
+  virtual void disconnect() = 0;
 
-	virtual std::unique_ptr<QueryResult> execute(const std::string& sql) = 0;
-    virtual void executeScript(const std::string& sql) = 0;
-	virtual std::unique_ptr<PreparedStatement> prepare(const std::string& sql) = 0;
+  virtual std::unique_ptr<QueryResult> execute(const std::string &sql) = 0;
+  virtual void executeScript(const std::string &sql) = 0;
+  virtual std::unique_ptr<PreparedStatement> prepare(
+      const std::string &sql) = 0;
 
-	virtual void beginTransaction() = 0;
-	virtual void commit() = 0;
-	virtual void rollback() = 0;
+  virtual void beginTransaction() = 0;
+  virtual void commit() = 0;
+  virtual void rollback() = 0;
 
-	virtual Value lastInsertId() = 0;
+  virtual Value lastInsertId() = 0;
 };

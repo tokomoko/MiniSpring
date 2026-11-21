@@ -1,29 +1,28 @@
 #pragma once
 
-#include"../../core/Core.h"
+#include "../../core/Core.h"
 
-#include"../PreparedStatement.h"
+#include "../PreparedStatement.h"
 
-#include<sqlite3.h>
+#include <sqlite3.h>
 
 class MINISPRING_API SQLitePreparedStatement : public PreparedStatement {
-public:
+ public:
+  SQLitePreparedStatement(sqlite3 *database, const std::string &sql);
+  ~SQLitePreparedStatement();
 
-	SQLitePreparedStatement(sqlite3* database, const std::string& sql);
-	~SQLitePreparedStatement();
+  void bind(int index, int value) override;
+  void bind(int index, double value) override;
+  void bind(int index, const std::string &value) override;
+  virtual void bind(int index, const char *value) override;
+  void bind(int index, bool value) override;
+  void bind(int index, const Value &value) override;
 
-	void bind(int index, int value) override;
-	void bind(int index, double value) override;
-	void bind(int index, const std::string& value) override;
-	virtual void bind(int index, const char* value) override;
-	void bind(int index, bool value) override;
-	void bind(int index, const Value& value) override;
+  std::unique_ptr<QueryResult> execute() override;
 
-	std::unique_ptr<QueryResult> execute() override;
+  void executeUpdate() override;
 
-	void executeUpdate() override;
-
-private:
-	sqlite3_stmt* m_statement;
-	std::string m_sql;
+ private:
+  sqlite3_stmt *m_statement;
+  std::string m_sql;
 };

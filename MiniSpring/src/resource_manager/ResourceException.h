@@ -1,29 +1,22 @@
 #pragma once
 
-#include"../core/Core.h"
+#include "../core/Core.h"
 
 #include <exception>
 #include <string>
 
 class ResourceException : public std::exception {
-public:
-	enum class Type {
-		NotFound,
-		InvalidPath,
-		ReadError
-	};
-	
-	ResourceException(Type type, std::string message) : m_type(type), m_message(std::move(message)) {}
+ public:
+  enum class Type { NotFound, InvalidPath, ReadError };
 
-	Type type() const {
-		return m_type;
-	}
+  ResourceException(Type type, std::string message)
+      : m_type(type), m_message(std::move(message)) {}
 
-	const char* what() const noexcept override {
-		return m_message.c_str();
-	}
+  Type type() const { return m_type; }
 
-private:
-	Type m_type;
-	std::string m_message;
+  const char *what() const noexcept override { return m_message.c_str(); }
+
+ private:
+  Type m_type;
+  std::string m_message;
 };

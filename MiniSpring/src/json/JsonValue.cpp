@@ -4,9 +4,9 @@
 
 JsonValue::JsonValue() : m_value(Value(nullptr)) {}
 
-JsonValue::JsonValue(const Value& value) : m_value(value) {}
+JsonValue::JsonValue(const Value &value) : m_value(value) {}
 
-JsonValue::JsonValue(const char* v) : m_value(Value(std::string(v))) {}
+JsonValue::JsonValue(const char *v) : m_value(Value(std::string(v))) {}
 
 JsonValue::JsonValue(std::string v) : m_value(Value(v)) {}
 
@@ -21,52 +21,52 @@ JsonValue::JsonValue(JsonArray v) : m_value(v) {}
 JsonValue::JsonValue(JsonObject v) : m_value(v) {}
 
 std::string JsonValue::asString() const {
-	return as<Value>().get<std::string>();
+  return as<Value>().get<std::string>();
 }
 
 std::string JsonValue::stringify() const {
+  if (std::holds_alternative<Value>(m_value))
+    return std::get<Value>(m_value).toJsonString();
 
-	if (std::holds_alternative<Value>(m_value))
-		return std::get<Value>(m_value).toJsonString();
+  if (is<JsonArray>()) {
+    auto &arr = std::get<JsonArray>(m_value);
 
-	if (is<JsonArray>()) {
-		auto& arr = std::get<JsonArray>(m_value);
+    std::string result = "[";
+    for (size_t i = 0; i < arr.size(); i++) {
+      if (i) result += ",";
+      result += arr[i].stringify();
+    }
 
-		std::string result = "[";
-		for (size_t i = 0; i < arr.size(); i++) {
-			if (i) result += ",";
-			result += arr[i].stringify();
-		}
+    result += "]";
 
-		result += "]";
+    return result;
+  }
 
-		return result;
-	}
+  if (is<JsonObject>()) {
+    auto &obj = std::get<JsonObject>(m_value);
 
-	if (is<JsonObject>()) {
-		auto& obj = std::get<JsonObject>(m_value);
+    std::string result = "{";
+    bool first = true;
+    for (auto &[key, val] : obj) {
+      if (!first) result += ",";
+      result += "\"" + key + "\":" + val.stringify();
+      first = false;
+    }
+    result += "}";
 
-		std::string result = "{";
-		bool first = true;
-		for (auto&[key, val] : obj) {
-			if (!first) result += ",";
-			result += "\"" + key + "\":" + val.stringify();
-			first = false;
-		}
-		result += "}";
+    return result;
+  }
 
-		return result;
-	}
-
-	return "";
+  return "";
 }
 
-JsonValue& JsonValue::operator[](const std::string& key) {
-	if (std::holds_alternative<Value>(m_value) && std::get<Value>(m_value).isNull())
-		m_value = JsonObject{};
+JsonValue &JsonValue::operator[](const std::string &key) {
+  if (std::holds_alternative<Value>(m_value) &&
+      std::get<Value>(m_value).isNull())
+    m_value = JsonObject{};
 
-	if (!std::holds_alternative<JsonObject>(m_value))
-		throw std::runtime_error("JsonValue is not an object");
+  if (!std::holds_alternative<JsonObject>(m_value))
+    throw std::runtime_error("JsonValue is not an object");
 
-	return std::get<JsonObject>(m_value)[key];
+  return std::get<JsonObject>(m_value)[key];
 }

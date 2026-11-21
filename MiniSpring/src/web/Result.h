@@ -1,40 +1,28 @@
 #pragma once
 
-#include"../core/Core.h"
+#include "../core/Core.h"
 
 #include <variant>
 
-template<typename T, typename E>
+template <typename T, typename E>
 class Result {
-public:
-	static Result success(T value) {
-		return Result(value, true);
-	}
+ public:
+  static Result success(T value) { return Result(value, true); }
 
-	static Result error(E error) {
-		return Result(error, false);
-	}
+  static Result error(E error) { return Result(error, false); }
 
-	bool isOk() const {
-		return m_success;
-	}
+  bool isOk() const { return m_success; }
 
-	T& value() {
-		return std::get<T>(m_data);
-	}
+  T &value() { return std::get<T>(m_data); }
 
-	E& error() {
-		return std::get<E>(m_data);
-	}
+  E &error() { return std::get<E>(m_data); }
 
-private:
-	Result(T value, bool success) : m_data(value), m_success(success) {}
-	Result(E error, bool success) : m_data(error), m_success(success) {}
+ private:
+  Result(T value, bool success) : m_data(value), m_success(success) {}
+  Result(E error, bool success) : m_data(error), m_success(success) {}
 
-private:
+ private:
+  std::variant<T, E> m_data;
 
-	std::variant<T, E> m_data;
-
-	bool m_success;
-
+  bool m_success;
 };

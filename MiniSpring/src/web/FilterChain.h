@@ -1,35 +1,34 @@
 #pragma once
 
-#include"../core/Core.h"
-#include"Filter.h"
+#include "../core/Core.h"
+#include "Filter.h"
 
-#include<memory>
-#include<vector>
+#include <memory>
+#include <vector>
 
 class MINISPRING_API FilterChain {
-public:
-	FilterChain() = default;
+ public:
+  FilterChain() = default;
 
-	FilterChain(const FilterChain&) = delete;
-	FilterChain& operator=(const FilterChain&) = delete;
+  FilterChain(const FilterChain &) = delete;
+  FilterChain &operator=(const FilterChain &) = delete;
 
-	FilterChain(FilterChain&&) = default;
-	FilterChain& operator=(FilterChain&&) = default;
+  FilterChain(FilterChain &&) = default;
+  FilterChain &operator=(FilterChain &&) = default;
 
-	void add(std::unique_ptr<IFilter> filter) {
-		m_filters.push_back(std::move(filter));
-	}
+  void add(std::unique_ptr<IFilter> filter) {
+    m_filters.push_back(std::move(filter));
+  }
 
-	bool run(HttpRequest& request, HttpResponse& response) {
-		for (std::unique_ptr<IFilter>& filter : m_filters)
-			if (!filter->doFilter(request, response))
-				return false;
+  bool run(HttpRequest &request, HttpResponse &response) {
+    for (std::unique_ptr<IFilter> &filter : m_filters)
+      if (!filter->doFilter(request, response)) return false;
 
-		return true;
-	}
+    return true;
+  }
 
-private:
-	std::vector<std::unique_ptr<IFilter>> m_filters;
+ private:
+  std::vector<std::unique_ptr<IFilter>> m_filters;
 };
 
 class MINISPRING_API PreFilterChain : public FilterChain {};
