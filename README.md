@@ -25,44 +25,82 @@ MiniSpring uses a modular application structure. Modules can be registered and c
 #include <MiniSpring.h>
 
 int main() {
+    // Create the application instance
     MiniSpringApp app;
-
-    // Configure database
+    
+    // Configure database module
+    // SQLite database file and directory containing schema migrations
     auto& database = app.modules().add<DatabaseModule>();
     database.configuration()
         .file("blog.db")
         .migrations("resources/migrations");
-
+    
     // Configure HTTP server
+    // Listen on port 8080 using 4 worker threads with keep-alive enabled
     auto& http = app.modules().add<HttpModule>();
     http.configuration()
         .port(8080)
         .threads(4)
         .keepAlive(true);
-
-    // Configure security
+    
+    // Configure directory for serving static files
+    http.staticFiles().directory("resources/static");
+    
+    // Configure security module
+    // Set session cookie name and HTTP security headers
     auto& security = app.modules().add<SecurityModule>();
     security.configuration()
         .cookieName("SESSIONID")
-        .frameOptions(FrameOptions::DENY);
-
-    // Register entities
+        .frameOptions(FrameOptions::DENY)
+        .referrerPolicy(ReferrerPolicy::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
+    
+    // Register types used by the ORM and JSON mapping system
     app.services().get<EntityRegistry>()
         .registerEntity<Post>()
-        .registerEntity<User>();
-
-    // Initialize and build application
+        .registerEntity<PostCreateRequest>()
+        .registerEntity<PostUpdateRequest>()
+        .registerEntity<User>()
+        .registerEntity<LoginRequest>();
+    
+    // Register application services
+    // Markdown rendering, password encoding, and user authentication
+    app.services().add<MarkdownRenderer>(
+        std::make_unique<MarkdownRenderer>()
+    );
+    
+    app.services().add<IPasswordEncoder>(
+        std::make_unique<PBKDF2PasswordEncoder>()
+    );
+    
+    app.services().add<IUserDetailsService>(
+        std::make_unique<AppUserDetailsService>(app.services())
+    );
+    
+    // Configure registered modules and build the application
     app.configure();
     app.build();
-
-    // Run database migrations
+    
+    // Apply pending database migrations and initialize the default admin account
     database.migrate();
-
-    // Register controllers
+    AdminSeeder::seed(app.services());
+    
+    // Create application repositories and services
+    // EntityManager handles database operations for registered entities
+    auto repository = std::make_unique<PostRepository>(
+        app.services().get<EntityManager>()
+    );
+    
+    auto service = std::make_unique<PostService>(*repository);
+    
+    // Register repositories and services in the application service container
+    app.services().add<PostRepository>(std::move(repository));
+    app.services().add<PostService>(std::move(service));
+    
+    // Register HTTP controllers
     http.controllers().registerController<PostController>(app);
     http.controllers().registerController<AuthController>(app);
-
-    // Start server
+    
+    // Start the HTTP server
     app.listen();
 }
 ```
