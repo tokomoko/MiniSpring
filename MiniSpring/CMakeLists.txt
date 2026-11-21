@@ -66,3 +66,7 @@ endif()
 
 # Keeps the folder structure in the Visual Studio solution explorer.
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${MINISPRING_SOURCES} ${MINISPRING_HEADERS})
+
+target_include_directories(MiniSpring PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
