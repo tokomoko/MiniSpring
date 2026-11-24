@@ -40,8 +40,8 @@ add_library(MiniSpring STATIC ${MINISPRING_SOURCES} ${MINISPRING_HEADERS})
 add_library(MiniSpring::MiniSpring ALIAS MiniSpring)
 
 target_include_directories(MiniSpring PUBLIC
-+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>) 
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>) 
 
 target_compile_features(MiniSpring PUBLIC cxx_std_17)
 
