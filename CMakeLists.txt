@@ -10,6 +10,3 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 add_subdirectory(MiniSpring)
-
-# Applications and tests that live in this repo go here later, e.g.
-# add_subdirectory(apps/FieldNotes)
