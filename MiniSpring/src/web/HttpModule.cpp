@@ -26,8 +26,7 @@ void HttpModule::start(ServiceProvider &services) {
 void HttpModule::stop(ServiceProvider &services) {
   // HttpServer::listen() is currently an unconditional `while (true)` with
   // no shutdown flag or socket-close hook it can react to, so there is no
-  // clean way to stop it yet. Flagging rather than silently no-op'ing this —
-  // worth a follow-up if you need graceful shutdown later.
+  // clean way to stop it yet.
 }
 
 bool HttpModule::handle(HttpRequest &request, HttpResponse &response) {
